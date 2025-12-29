@@ -2,53 +2,56 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0ea5a6" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0EA5E9" />
   <title>במחשבה שנייה</title>
 
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./logo.png" />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- iOS basic -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="במחשבה שנייה" />
+  <link rel="apple-touch-icon" href="./logo.png" />
 </head>
+
 <body>
-  <!-- Splash -->
-  <div id="splash" class="splash">
-    <div class="splashCard">
-      <img class="splashLogo" src="logo.png" alt="לוגו" />
-      <div class="splashTitle brandFont">במחשבה שנייה</div>
-      <div class="splashSub">כלי קצר. צעד קטן. יחד.</div>
-    </div>
+  <div id="splash" class="splash" aria-hidden="true">
+    <img src="./logo.png" class="splashLogo" alt="לוגו" />
+    <div class="splashText">במחשבה שנייה</div>
+    <div class="splashSub">כלים קצרים לוויסות, בדיקת מציאות וקבלת החלטות</div>
   </div>
 
-  <!-- App -->
   <header class="topbar">
     <div class="brand">
-      <img class="brandIcon" src="logo.png" alt="לוגו" />
+      <img src="./logo.png" class="brandLogo" alt="לוגו" />
       <div class="brandText">
-        <div class="brandName brandFont">במחשבה שנייה</div>
-        <div class="brandTag">עוצרים • מווסתים • ממשיכים</div>
+        <div class="brandTitle">במחשבה שנייה</div>
+        <div class="brandTag">אנחנו עושים את זה יחד, צעד קטן בכל פעם</div>
       </div>
-    </div>
-
-    <div class="topActions">
-      <button id="btnSettings" class="iconBtn" type="button" title="הגדרות">⚙️</button>
     </div>
   </header>
 
-  <main class="container">
-    <div id="screen"></div>
+  <main class="app" id="app">
+    <!-- injected by app.js -->
   </main>
 
-  <nav class="bottomNav">
-    <button id="navHome" class="navBtn active" type="button">
-      <span class="navIco">🏠</span>
-      <span class="navTxt">בית</span>
+  <nav class="bottomNav" aria-label="תפריט תחתון">
+    <button class="navBtn" data-route="home" aria-label="בית">
+      <span class="navIcon">⌂</span>
+      <span class="navLabel">בית</span>
     </button>
-    <button id="navHistory" class="navBtn" type="button">
-      <span class="navIco">📊</span>
-      <span class="navTxt">היסטוריה</span>
+    <button class="navBtn" data-route="history" aria-label="היסטוריה">
+      <span class="navIcon">🕒</span>
+      <span class="navLabel">היסטוריה</span>
+    </button>
+    <button class="navBtn" data-route="privacy" aria-label="פרטיות">
+      <span class="navIcon">🔒</span>
+      <span class="navLabel">פרטיות</span>
     </button>
   </nav>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
