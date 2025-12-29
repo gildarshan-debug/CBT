@@ -25,7 +25,7 @@
 /* AmaticSC Hebrew (local file) */
 @font-face{
   font-family: "AmaticSC-Hebrew";
-  src: url("./amaticsc") format("truetype");
+  src: url("./amaticsc.ttf") format("truetype");
   font-display: swap;
 }
 
@@ -374,3 +374,4 @@ input[type="range"]{ width:100%; }
   color: var(--text);
   border-color: rgba(14,165,233,.25);
 }
+
