@@ -46,6 +46,75 @@
   };
   const saveState = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
 
+
+  // ---------- Lock (Local-only) ----------
+  const LOCK_KEY = "opensense_lock_v1";
+  const loadLock = () => {
+    try {
+      const raw = localStorage.getItem(LOCK_KEY);
+      if (!raw) return { enabled: false, hash: "", timeoutMin: 1, lastActive: Date.now() };
+      const o = JSON.parse(raw);
+      return {
+        enabled: !!o.enabled,
+        hash: String(o.hash || ""),
+        timeoutMin: Number.isFinite(Number(o.timeoutMin)) ? Number(o.timeoutMin) : 1,
+        lastActive: Number.isFinite(Number(o.lastActive)) ? Number(o.lastActive) : Date.now()
+      };
+    } catch {
+      return { enabled: false, hash: "", timeoutMin: 1, lastActive: Date.now() };
+    }
+  };
+  const saveLock = () => localStorage.setItem(LOCK_KEY, JSON.stringify(lock));
+  const lock = loadLock();
+
+  const lockState = {
+    isLocked: false,
+    pendingRoute: null
+  };
+
+  const sha256Hex = async (text) => {
+    const enc = new TextEncoder();
+    const buf = enc.encode(String(text));
+    const digest = await crypto.subtle.digest("SHA-256", buf);
+    const bytes = Array.from(new Uint8Array(digest));
+    return bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+  };
+
+  const pinValid = (pin) => /^\d{4}$/.test(String(pin || "").trim());
+
+  const lockNow = () => {
+    lockState.isLocked = true;
+    lockState.pendingRoute = ui.route || "home";
+    ui.route = "lock";
+    render();
+  };
+
+  const unlockNow = () => {
+    lockState.isLocked = false;
+    const next = lockState.pendingRoute || "home";
+    lockState.pendingRoute = null;
+    ui.route = next;
+    touchActive();
+    render();
+  };
+
+  const touchActive = () => {
+    lock.lastActive = Date.now();
+    saveLock();
+  };
+
+  const shouldAutoLock = () => {
+    if (!lock.enabled || !lock.hash) return false;
+    const t = Number(lock.timeoutMin);
+    if (!Number.isFinite(t) || t <= 0) return false; // 0 = no auto-lock
+    return (Date.now() - Number(lock.lastActive || 0)) > t * 60 * 1000;
+  };
+
+  const clearAllLocalData = () => {
+    // Removes all app content + lock config
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LOCK_KEY);
+  };
   const state = loadState();
 
   // ---------- Content ----------
@@ -372,6 +441,8 @@
       <div class="card">
         ${cardHeader("לחץ / הצפה", "נרגיע את הגוף רגע, ואז נחזיר סדר לראש.")}
         <div class="stack">
+        <button class="btn ghost" id="btnSecurity">🔐 אבטחה ונעילה</button>
+
           ${sliderBlock("עוצמה עכשיו (0–10)", ui.reg.intensity === null ? "0 – לא בחרתי" : `${ui.reg.intensity}`, "reg_int", "בחר רק אחרי שאתה מזיז את הסליידר.")}
           ${selectBlock("טריגר", "reg_trigger", TRIGGERS, ui.reg.trigger)}
           <div class="sliderWrap">
@@ -877,6 +948,11 @@
     });
   };
 
+  const bindPrivacy = () => {
+    $("#btnSecurity")?.addEventListener("click", () => setRoute("security"));
+  };
+
+
 
   // ---------- Insights view ----------
   const parseNoteValue = (note, label) => {
@@ -1029,6 +1105,204 @@
     `;
   };
 
+
+  // ---------- Lock screen ----------
+  const lockView = () => `
+    <div class="card">
+      ${cardHeader("🔐 האפליקציה נעולה", "כדי להגן על פרטיות המידע – צריך להזין קוד.")}
+      <div class="stack">
+        <div class="item">
+          <div style="font-weight:900; margin-bottom:6px;">קוד (4 ספרות)</div>
+          <input id="lockPin" class="input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="••••">
+          <div id="lockErr" class="smallNote" style="margin-top:8px; color: var(--danger, #ff6b6b); display:none;"></div>
+        </div>
+        <button id="btnUnlock" class="btn primary">פתח</button>
+        <button id="btnForgotPin" class="btn ghost">שכחתי את הקוד</button>
+        <div class="smallNote">
+          טיפ: אם שכחת את הקוד – אפשר לאפס את האפליקציה. זה ימחק את הנתונים המקומיים (אי אפשר לשחזר).
+        </div>
+      </div>
+    </div>
+  `;
+
+  const bindLock = () => {
+    const pinEl = $("#lockPin");
+    const errEl = $("#lockErr");
+    const showErr = (msg) => {
+      if (!errEl) return;
+      errEl.style.display = "block";
+      errEl.textContent = msg;
+    };
+
+    $("#btnUnlock")?.addEventListener("click", async () => {
+      const pin = String(pinEl?.value || "").trim();
+      if (!pinValid(pin)) return showErr("הקוד חייב להיות 4 ספרות.");
+      try {
+        const h = await sha256Hex(pin);
+        if (h === lock.hash) {
+          unlockNow();
+        } else {
+          showErr("הקוד שגוי. נסה שוב.");
+        }
+      } catch {
+        showErr("שגיאה טכנית. נסה שוב.");
+      }
+    });
+
+    pinEl?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") $("#btnUnlock")?.click();
+    });
+
+    $("#btnForgotPin")?.addEventListener("click", () => {
+      confirmModal(
+        "איפוס האפליקציה",
+        "הפעולה תסיר את הנעילה ותמחק את כל הנתונים המקומיים במכשיר זה. אין אפשרות לשחזור.",
+        "איפוס והתחלה מחדש",
+        () => {
+          clearAllLocalData();
+          // Hard reload to ensure clean state
+          location.reload();
+        }
+      );
+    });
+  };
+
+  // ---------- Security & Lock settings ----------
+  const securityView = () => {
+    const enabled = !!lock.enabled;
+    const timeout = Number(lock.timeoutMin);
+    const timeoutLabel = (t) => (t<=0 ? "ללא נעילה אוטומטית" : `${t} דקה${t===1?"":"ות"}`);
+    return `
+      <div class="card">
+        ${cardHeader("🔐 אבטחה ונעילה", "נעילה מקומית מאפשרת מרחב בטוח לעבודה רגשית.")}
+        <div class="stack">
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">מצב נעילה</div>
+            <div class="row" style="justify-content:space-between; gap:12px; align-items:center;">
+              <div class="p">${enabled ? "נעילה פעילה ✅" : "נעילה כבויה"}</div>
+              <button id="toggleLock" class="btn ${enabled ? "ghost" : "primary"}">${enabled ? "כיבוי נעילה" : "הפעל נעילה"}</button>
+            </div>
+            <div class="smallNote" style="margin-top:6px;">
+              חשוב: הקוד נשמר רק במכשיר ולא ניתן לשחזור. אם הקוד יישכח – הפתרון היחיד הוא איפוס מקומי (מחיקת הנתונים).
+            </div>
+          </div>
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">נעילה אוטומטית</div>
+            <div class="smallNote" style="margin-bottom:8px;">מומלץ לבחור נעילה אוטומטית באזורים משותפים.</div>
+            <select id="lockTimeout" class="input">
+              <option value="0" ${timeout<=0?"selected":""}>ללא נעילה אוטומטית</option>
+              <option value="1" ${timeout===1?"selected":""}>אחרי 1 דקה</option>
+              <option value="5" ${timeout===5?"selected":""}>אחרי 5 דקות</option>
+            </select>
+            <div class="smallNote" style="margin-top:8px;">נבחר כרגע: <strong>${esc(timeoutLabel(timeout))}</strong></div>
+          </div>
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">שינוי קוד</div>
+            <div class="grid2">
+              <div>
+                <div class="smallNote" style="margin-bottom:6px;">קוד נוכחי</div>
+                <input id="curPin" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+              </div>
+              <div>
+                <div class="smallNote" style="margin-bottom:6px;">קוד חדש</div>
+                <input id="newPin" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <div class="smallNote" style="margin-bottom:6px;">אימות קוד חדש</div>
+              <input id="newPin2" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+            </div>
+            <div id="secErr" class="smallNote" style="margin-top:10px; color: var(--danger, #ff6b6b); display:none;"></div>
+            <button id="btnChangePin" class="btn ghost" style="margin-top:10px;">שמור קוד חדש</button>
+          </div>
+
+          <div class="item">
+            <button id="btnBackFromSecurity" class="btn">חזרה</button>
+          </div>
+
+          <div class="smallNote">
+            האפליקציה לא שולחת מידע החוצה ולא אוספת סטטיסטיקות. כל ההגדרות נשמרות מקומית במכשיר שלך בלבד.
+          </div>
+
+        </div>
+      </div>
+    `;
+  };
+
+  const bindSecurity = () => {
+    const errEl = $("#secErr");
+    const showErr = (msg) => {
+      if (!errEl) return;
+      errEl.style.display = "block";
+      errEl.textContent = msg;
+    };
+    const clearErr = () => {
+      if (!errEl) return;
+      errEl.style.display = "none";
+      errEl.textContent = "";
+    };
+
+    $("#btnBackFromSecurity")?.addEventListener("click", () => setRoute("privacy"));
+
+    $("#lockTimeout")?.addEventListener("change", (e) => {
+      const v = Number(e.target.value);
+      lock.timeoutMin = Number.isFinite(v) ? v : 1;
+      saveLock();
+      touchActive();
+      toast("עודכן ✅");
+      render();
+    });
+
+    $("#toggleLock")?.addEventListener("click", async () => {
+      clearErr();
+      if (lock.enabled) {
+        // Disable requires current pin
+        const cur = String($("#curPin")?.value || "").trim();
+        if (!pinValid(cur)) return showErr("כדי לכבות נעילה, הזן קוד נוכחי בן 4 ספרות.");
+        const h = await sha256Hex(cur);
+        if (h !== lock.hash) return showErr("הקוד הנוכחי שגוי.");
+        lock.enabled = false;
+        saveLock();
+        toast("נעילה כובתה ✅");
+        render();
+        return;
+      }
+
+      // Enable: requires setting a new pin (use newPin/newPin2)
+      const p1 = String($("#newPin")?.value || "").trim();
+      const p2 = String($("#newPin2")?.value || "").trim();
+      if (!pinValid(p1) || !pinValid(p2)) return showErr("כדי להפעיל נעילה, הזן קוד חדש בן 4 ספרות ואימות.");
+      if (p1 !== p2) return showErr("האימות לא תואם לקוד החדש.");
+      lock.hash = await sha256Hex(p1);
+      lock.enabled = true;
+      touchActive();
+      saveLock();
+      toast("נעילה הופעלה ✅");
+      render();
+    });
+
+    $("#btnChangePin")?.addEventListener("click", async () => {
+      clearErr();
+      if (!lock.enabled || !lock.hash) return showErr("כדי לשנות קוד, יש להפעיל נעילה קודם.");
+      const cur = String($("#curPin")?.value || "").trim();
+      const p1 = String($("#newPin")?.value || "").trim();
+      const p2 = String($("#newPin2")?.value || "").trim();
+      if (!pinValid(cur)) return showErr("הזן קוד נוכחי בן 4 ספרות.");
+      const h = await sha256Hex(cur);
+      if (h !== lock.hash) return showErr("הקוד הנוכחי שגוי.");
+      if (!pinValid(p1) || !pinValid(p2)) return showErr("הקוד החדש חייב להיות 4 ספרות + אימות.");
+      if (p1 !== p2) return showErr("האימות לא תואם לקוד החדש.");
+      lock.hash = await sha256Hex(p1);
+      touchActive();
+      saveLock();
+      toast("קוד עודכן ✅");
+      render();
+    });
+  };
+
   // ---------- Privacy view ----------
   const privacyView = () => `
     <div class="card">
@@ -1093,6 +1367,19 @@
   const render = () => {
     if (!app) return;
 
+    // Lock gate (local-only)
+    if (lock.enabled && lock.hash) {
+      if (!lockState.isLocked && shouldAutoLock()) {
+        lockNow();
+        return;
+      }
+      if (lockState.isLocked || ui.route === "lock") {
+        app.innerHTML = lockView();
+        bindLock();
+        return;
+      }
+    }
+
     let html = "";
     if (ui.route === "home") html = homeView();
     if (ui.route === "reg") html = regView();
@@ -1100,7 +1387,9 @@
     if (ui.route === "dilemma") html = dilemmaView();
     if (ui.route === "history") html = historyView();
     if (ui.route === "privacy") html = privacyView();
+    if (ui.route === "security") html = securityView();
     if (ui.route === "insights") html = insightsView();
+    if (ui.route === "lock") html = lockView();
 
     app.innerHTML = html;
 
@@ -1114,6 +1403,9 @@
     if (ui.route === "thought") bindThought();
     if (ui.route === "dilemma") bindDilemma();
     if (ui.route === "history") bindHistory();
+    if (ui.route === "privacy") bindPrivacy();
+    if (ui.route === "security") bindSecurity();
+    if (ui.route === "lock") bindLock();
   };
 
   // ---------- Splash + SW ----------
@@ -1136,6 +1428,18 @@
   // ---------- Boot ----------
   const boot = () => {
     mountNav();
+    // Activity tracking for auto-lock
+    const activity = () => { if (lock.enabled && lock.hash && !lockState.isLocked) touchActive(); };
+    ["click","keydown","touchstart","mousemove"].forEach(evt => document.addEventListener(evt, activity, true));
+    setInterval(() => {
+      if (lock.enabled && lock.hash && !lockState.isLocked && shouldAutoLock()) lockNow();
+    }, 5000);
+
+    // Initial lock gate
+    if (lock.enabled && lock.hash) {
+      lockState.isLocked = true;
+      ui.route = "lock";
+    }
     render();
     hideSplashSoon();
     registerSW();
