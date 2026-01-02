@@ -305,7 +305,8 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   z-index: 20;
 }
-.navBtn{
+.navBtn,
+.nav-btn{
   flex: 1 1 0;
   max-width: 240px;
   border-radius: 18px;
@@ -319,7 +320,8 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   gap:10px;
 }
-.navBtn.active{
+.navBtn.active,
+.nav-btn.active{
   background: linear-gradient(135deg, rgba(14,165,233,.28), rgba(34,197,94,.18));
   border-color: rgba(14,165,233,.35);
 }
