@@ -263,15 +263,15 @@
   const setRoute = (r) => {
     ui.route = r;
     render();
-    $$("button.navBtn").forEach(b => b.classList.toggle("active", b.dataset.route === r));
+    $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").forEach(b => b.classList.toggle("active", b.dataset.route === r));
   };
 
   const mountNav = () => {
-    $$("button.navBtn").forEach(btn => {
+    $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").forEach(btn => {
       btn.addEventListener("click", () => setRoute(btn.dataset.route));
     });
     // default active
-    $$("button.navBtn").forEach(b => b.classList.toggle("active", b.dataset.route === ui.route));
+    $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").forEach(b => b.classList.toggle("active", b.dataset.route === ui.route));
   };
 
   const app = $("#app");
@@ -609,7 +609,6 @@
       const alts = uniquePickMany(chosen, 3).map(x => x.text);
 
       // update anti-repeat list with selected ids
-      const pickedIds = chosen.slice(0,0);
       // rebuild from alts
       const altIds = alts.map(a => {
         const found = pool.find(p => p.text === a);
@@ -878,6 +877,158 @@
     });
   };
 
+
+  // ---------- Insights view ----------
+  const parseNoteValue = (note, label) => {
+    if (!note) return "";
+    const lines = String(note).split(/\r?\n/);
+    const line = lines.find(l => l.trim().startsWith(label));
+    if (!line) return "";
+    return line.slice(label.length).trim();
+  };
+
+  const dayKeyFromISO = (iso) => {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("he-IL", { year:"numeric", month:"2-digit", day:"2-digit" });
+  };
+
+  const computeInsights = () => {
+    const events = state.history || [];
+    const total = events.length;
+
+    const kindCount = new Map();
+    const triggerCount = new Map();
+    const choiceCount = new Map(); // repeating saved choice (exercise title / chosen alt / dilemma step)
+    const days = new Set();
+
+    const now = new Date();
+    const endLast7 = new Date(now); endLast7.setHours(23,59,59,999);
+    const startLast7 = new Date(endLast7); startLast7.setDate(startLast7.getDate() - 6); startLast7.setHours(0,0,0,0);
+
+    const endPrev7 = new Date(startLast7.getTime() - 1);
+    const startPrev7 = new Date(endPrev7); startPrev7.setDate(startPrev7.getDate() - 6); startPrev7.setHours(0,0,0,0);
+
+    const last7Int = [];
+    const prev7Int = [];
+
+    for (const it of events) {
+      if (!it || !it.ts) continue;
+      days.add(dayKeyFromISO(it.ts));
+
+      const kind = it.kind || "לא ידוע";
+      kindCount.set(kind, (kindCount.get(kind) || 0) + 1);
+
+      const trig = it.trigger || "";
+      if (trig) triggerCount.set(trig, (triggerCount.get(trig) || 0) + 1);
+
+      const d = new Date(it.ts);
+      const inten = Number(it.intensity);
+      if (!isNaN(d.getTime()) && Number.isFinite(inten)) {
+        if (d >= startLast7 && d <= endLast7) last7Int.push(inten);
+        else if (d >= startPrev7 && d <= endPrev7) prev7Int.push(inten);
+      }
+
+      // Repeating "what helps" proxy:
+      // - Regulation: title is the exercise
+      // - Thought: parse "חלופה שנבחרה:"
+      // - Dilemma: parse "צעד קטן:"
+      let key = "";
+      if (kind === "לחץ/הצפה") key = (it.title || "").trim();
+      else if (kind === "מחשבה שלא עוזבת") key = parseNoteValue(it.note, "חלופה שנבחרה:");
+      else if (kind === "דילמה") key = parseNoteValue(it.note, "צעד קטן:");
+      if (key) choiceCount.set(key, (choiceCount.get(key) || 0) + 1);
+    }
+
+    const avg = (arr) => arr.length ? (arr.reduce((s,x)=>s+x,0) / arr.length) : null;
+
+    const topN = (map, n=3) => [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,n);
+
+    return {
+      total,
+      daysCount: days.size,
+      avgLast7: avg(last7Int),
+      avgPrev7: avg(prev7Int),
+      topKinds: topN(kindCount, 3),
+      topTriggers: topN(triggerCount, 3),
+      topChoices: topN(choiceCount, 3)
+    };
+  };
+
+  const fmt = (n, digits=1) => (n==null || !isFinite(n)) ? "—" : Number(n).toFixed(digits);
+
+  const insightsView = () => {
+    const ins = computeInsights();
+
+    const delta = (ins.avgLast7!=null && ins.avgPrev7!=null) ? (ins.avgLast7 - ins.avgPrev7) : null;
+    const deltaLine = (delta==null || !isFinite(delta))
+      ? "אין מספיק נתונים להשוואה (צריך לפחות כמה אירועים בשני השבועות)."
+      : (Math.abs(delta) < 0.05)
+        ? "נראה שהעוצמה יציבה (שינוי מזערי)."
+        : (delta < 0)
+          ? `בשבוע האחרון העוצמה הממוצעת ירדה ב־${fmt(Math.abs(delta),1)} נק׳.`
+          : `בשבוע האחרון העוצמה הממוצעת עלתה ב־${fmt(delta,1)} נק׳.`;
+
+    const renderTop = (items, emptyText) => {
+      if (!items || !items.length) return `<div class="smallNote">${esc(emptyText)}</div>`;
+      return `
+        <ol class="p" style="margin:0; padding-inline-start:18px;">
+          ${items.map(([k,v]) => `<li><span style="font-weight:900;">${esc(k)}</span> <span class="smallNote">(${v})</span></li>`).join("")}
+        </ol>
+      `;
+    };
+
+    return `
+      <div class="card">
+        ${cardHeader("💡 תובנות", "מסכם דפוסים מהשימוש שלך — הכל נשמר מקומית במכשיר.")}
+        <div class="kpi">
+          <div class="kpiItem">
+            <div class="kpiTitle">סה״כ אירועים</div>
+            <div class="kpiValue">${ins.total}</div>
+          </div>
+          <div class="kpiItem">
+            <div class="kpiTitle">ימים עם נתונים</div>
+            <div class="kpiValue">${ins.daysCount}</div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="item">
+          <div style="font-weight:900; margin-bottom:6px;">עוצמה ממוצעת</div>
+          <div class="p">7 ימים אחרונים: <span style="font-weight:900;">${fmt(ins.avgLast7,1)}</span> • 7 ימים קודמים: <span style="font-weight:900;">${fmt(ins.avgPrev7,1)}</span></div>
+          <div class="smallNote" style="margin-top:6px;">${esc(deltaLine)}</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="grid2">
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">הכלי הכי בשימוש</div>
+            ${renderTop(ins.topKinds, "עדיין אין מספיק נתונים.")}
+          </div>
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">טריגרים חוזרים</div>
+            ${renderTop(ins.topTriggers, "לא נשמרו טריגרים מספיק כדי לזהות מגמה.")}
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="item">
+          <div style="font-weight:900; margin-bottom:6px;">מה חוזר אצלך (רמז למה שעובד)</div>
+          <div class="smallNote" style="margin-bottom:8px;">אנחנו לא “מאבחנים” — רק מזהים חזרות בתרגילים/בחירות שנשמרו.</div>
+          ${renderTop(ins.topChoices, "עדיין אין בחירות שחוזרות מספיק כדי להציג כאן.")}
+        </div>
+
+        <div class="hr"></div>
+        <div class="smallNote">
+          טיפ: אם העוצמה עלתה — זה לא כישלון. זה מידע. אפשר לבחור צעד קטן אחד לשבוע הקרוב (למשל 2 תרגילי ויסות קבועים).
+        </div>
+      </div>
+    `;
+  };
+
   // ---------- Privacy view ----------
   const privacyView = () => `
     <div class="card">
@@ -949,6 +1100,7 @@
     if (ui.route === "dilemma") html = dilemmaView();
     if (ui.route === "history") html = historyView();
     if (ui.route === "privacy") html = privacyView();
+    if (ui.route === "insights") html = insightsView();
 
     app.innerHTML = html;
 
@@ -991,3 +1143,4 @@
 
   document.addEventListener("DOMContentLoaded", boot);
 })();
+
