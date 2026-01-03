@@ -1304,26 +1304,46 @@
   };
 
   // ---------- Privacy view ----------
-  const privacyView = () => `
-    <div class="card">
-      ${cardHeader("פרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
-      <div class="stack">
-        <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">איפה הנתונים נשמרים?</div>
-          <div class="p">רק במכשיר שלך (Local Storage). אין שרת. אין חשבון. אין שליחה לענן.</div>
-        </div>
-        <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">מי יכול לראות?</div>
-          <div class="p">מי שיש לו גישה פיזית למכשיר פתוח. לכן כדאי לשמור את הטלפון נעול.</div>
-        </div>
-        <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">מה האפליקציה לא עושה?</div>
-          <div class="p">היא לא מאבחנת ולא מחליפה טיפול. היא נותנת כלים קצרים ומעקב עצמי.</div>
-        </div>
-      </div>
-    </div>
-  `;
+const privacyView = () => `
+  <div class="card">
+    ${cardHeader("אבטחה ופרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
+    <div class="stack">
 
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">איפה הנתונים נשמרים?</div>
+        <div class="p">רק במכשיר שלך (Local Storage). אין שרת. אין חשבון. אין שליחה לענן.</div>
+      </div>
+
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">למי יש גישה?</div>
+        <div class="p">מי שיש לו גישה פיזית למכשיר פתוח. אם המכשיר פתוח — אפשר לראות. לכן מומלץ להפעיל נעילה בתוך האפליקציה בנוסף לנעילת המכשיר.</div>
+      </div>
+
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">מה האפליקציה לא עושה?</div>
+        <div class="p">היא לא מאבחנת, לא מחליפה טיפול, ולא שולחת נתונים החוצה. זה כלי פסיכו־חינוכי ומעקב עצמי.</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <button class="btn ghost" id="btnSecurity">
+        <span class="row" style="gap:10px;">
+          <span class="iconPill">🔐</span>
+          <span>
+            <div style="font-weight:900;">נעילה בתוך האפליקציה</div>
+            <div class="p">הפעל/כבה קוד, זמן נעילה, שינוי קוד</div>
+          </span>
+        </span>
+        <span>›</span>
+      </button>
+
+      <div class="smallNote">
+        טיפ: אם בחרת להפעיל נעילה — אם שוכחים את הקוד, הפתרון היחיד הוא איפוס (זה מוחק את הנתונים המקומיים). אין שחזור ואין שרת שיכול לעזור.
+      </div>
+
+    </div>
+  </div>
+`;
   // ---------- Toast ----------
   let toastTimer = null;
   const toast = (msg) => {
