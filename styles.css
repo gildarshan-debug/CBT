@@ -19,13 +19,13 @@
   --font-body: "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 
   /* HEADINGS */
-  --font-head: "Amaticsc-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
+  --font-head: "amaticsc-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 }
 
-/* Amaticsc Hebrew (local file) */
+/* amaticsc Hebrew (local file) */
 @font-face{
-  font-family: "Amaticsc-Hebrew";
-  src: url("/CBT/Amaticsc.ttf") format("truetype");
+  font-family: "amaticsc-Hebrew";
+  src: url("/CBT/amaticsc.ttf") format("truetype");
   font-display: swap;
 }
 
