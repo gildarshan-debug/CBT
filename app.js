@@ -383,7 +383,7 @@
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
           <span class="row" style="gap:10px;">
-            <span class="iconPill">🫧</span>
+            <span class="iconPill"></span>
             <span>
               <div style="font-weight:900;">לחץ/הצפה</div>
               <div class="p">תרגיל ויסות אחד בכל פעם</div>
@@ -394,7 +394,7 @@
 
         <button class="btn" data-open="thought">
           <span class="row" style="gap:10px;">
-            <span class="iconPill">🧠</span>
+            <span class="iconPill"></span>
             <span>
               <div style="font-weight:900;">מחשבה שלא עוזבת</div>
               <div class="p">בדיקת מציאות + חלופות</div>
@@ -405,7 +405,7 @@
 
         <button class="btn" data-open="dilemma">
           <span class="row" style="gap:10px;">
-            <span class="iconPill">🧭</span>
+            <span class="iconPill"></span>
             <span>
               <div style="font-weight:900;">דילמה</div>
               <div class="p">כיוון + צעד קטן</div>
@@ -422,7 +422,7 @@
           <div class="kpiValue">${state.history.length}</div>
         </div>
         <div class="kpiItem">
-          <div class="kpiTitle">זכירה מקומית</div>
+          <div class="kpiTitle"></div>
           <div class="kpiValue">פעיל</div>
         </div>
       </div>
@@ -456,7 +456,7 @@
 
           <button class="btn btnPrimary" id="reg_next">
             <span class="row" style="gap:10px;">
-              <span class="iconPill">🎲</span>
+              <span class="iconPill"></span>
               <span>
                 <div style="font-weight:900;">תן לי תרגיל</div>
                 <div class="p">תרגיל אחד בכל פעם (בלי חזרות)</div>
@@ -493,7 +493,7 @@
         ${cardHeader("שמור וסיים", "כשתסיים את התרגיל—נשמור את האירוע, כדי שתוכל/י לראות דפוסים לאורך זמן.")}
         <button class="btn btnPrimary" id="reg_save">
           <span class="row" style="gap:10px;">
-            <span class="iconPill">💾</span>
+            <span class="iconPill"></span>
             <span>
               <div style="font-weight:900;">שמור וסיים</div>
               <div class="p">יישמר לפי שעה + יום + עוצמה + טריגר</div>
@@ -583,7 +583,7 @@
 
           <button class="btn btnPrimary" id="th_generate">
             <span class="row" style="gap:10px;">
-              <span class="iconPill">✨</span>
+              <span class="iconPill"></span>
               <span>
                 <div style="font-weight:900;">תן לי בדיקת מציאות</div>
                 <div class="p">ואז 2–3 מחשבות חליפיות</div>
@@ -601,7 +601,7 @@
               ${outs[0].alts.map((a, idx) => `
                 <button class="btn btnSmall" data-alt="${idx}">
                   <span class="row" style="gap:10px;">
-                    <span class="iconPill">🧩</span>
+                    <span class="iconPill"></span>
                     <span style="text-align:right;">
                       <div style="font-weight:900;">חלופה ${idx+1}</div>
                       <div class="p">${esc(a)}</div>
@@ -740,7 +740,7 @@
 
           <button class="btn btnPrimary" id="di_generate">
             <span class="row" style="gap:10px;">
-              <span class="iconPill">🧭</span>
+              <span class="iconPill"></span>
               <span>
                 <div style="font-weight:900;">בוא נבנה כיוון</div>
                 <div class="p">עדין, ברור, ומעשי</div>
@@ -770,7 +770,7 @@
               <div class="hr"></div>
               <button class="btn btnPrimary" id="di_save">
                 <span class="row" style="gap:10px;">
-                  <span class="iconPill">💾</span>
+                  <span class="iconPill"></span>
                   <span>
                     <div style="font-weight:900;">שמור וסיים</div>
                     <div class="p">דילמה + צעד קטן + עוצמה + טריגר</div>
@@ -1468,3 +1468,58 @@ const privacyView = () => `
   document.addEventListener("DOMContentLoaded", boot);
 })();
 
+
+
+// ===== Journal (התנסויות) =====
+const JOURNAL_KEY = "opensense_journal_v1";
+function loadJournal(){ try{return JSON.parse(localStorage.getItem(JOURNAL_KEY))||[]}catch{return []} }
+function saveJournal(a){ localStorage.setItem(JOURNAL_KEY, JSON.stringify(a)); }
+let journal = loadJournal();
+
+function journalView(){
+  return `
+  <div class="card">
+    <div class="h1">התנסויות</div>
+    <p class="p">זה המקום לעצור רגע ולכתוב. מחשבות, רעיונות, תובנות או דברים שעבדו לך.</p>
+    <textarea id="jr_text" placeholder="כתוב כאן חופשי..."></textarea>
+    <button class="btn btnPrimary" id="jr_save"><span>שמור</span></button>
+    <div class="hr"></div>
+    ${journal.length===0?'<p class="p">עדיין אין רשומות.</p>':journal.map(j=>`<div class="item"><div class="p" style="white-space:pre-wrap;">${j.text}</div></div>`).join('')}
+  </div>`;
+}
+
+// ===== Goal (יעד אישי) =====
+const GOAL_KEY = "opensense_goal_v1";
+function loadGoal(){ try{return JSON.parse(localStorage.getItem(GOAL_KEY))||{text:'',why:'',step:''}}catch{return {text:'',why:'',step:''}} }
+function saveGoal(g){ localStorage.setItem(GOAL_KEY, JSON.stringify(g)); }
+let goal = loadGoal();
+
+function goalView(){
+  return `
+  <div class="card">
+    <div class="h1">יעד אישי</div>
+    <p class="p">יעד הוא כיוון. אפשר לשנות ולהתאים בכל שלב.</p>
+    <textarea id="g_text" placeholder="מה היעד האישי שלי?">${goal.text||''}</textarea>
+    <textarea id="g_why" placeholder="למה זה חשוב לי?">${goal.why||''}</textarea>
+    <textarea id="g_step" placeholder="צעד קטן שאוכל לעשות">${goal.step||''}</textarea>
+    <button class="btn btnPrimary" id="g_save"><span>שמור יעד</span></button>
+  </div>`;
+}
+
+document.addEventListener("click",(e)=>{
+  if(e.target && e.target.id==="jr_save"){
+    const t=document.getElementById("jr_text").value.trim();
+    if(!t) return;
+    journal.unshift({text:t,ts:new Date().toISOString()});
+    saveJournal(journal);
+    location.hash="#journal";
+  }
+  if(e.target && e.target.id==="g_save"){
+    goal={
+      text:document.getElementById("g_text").value.trim(),
+      why:document.getElementById("g_why").value.trim(),
+      step:document.getElementById("g_step").value.trim()
+    };
+    saveGoal(goal);
+  }
+});
