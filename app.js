@@ -286,7 +286,9 @@
     </div>
   `;
 
-  const sliderBlock = (label, valueText, id, note) => `
+  
+  const cardHeaderSimple = (title) => cardHeader(title, "");
+const sliderBlock = (label, valueText, id, note) => `
     <div class="sliderWrap">
       <div class="sliderTop">
         <div class="sliderLabel">${esc(label)}</div>
@@ -923,7 +925,7 @@
 
   const exposuresView = () => `
     <div class="card">
-      ${cardHeader("חשיפות", "דף קצר לתיעוד התנסויות שעשית, כדי לראות התקדמות לאורך זמן. כתוב מה עשית ומה לקחת מזה.")}
+      ${cardHeader("חשיפות", "דף קצר לתיעוד חשיפות שעשית, כדי לראות התקדמות לאורך זמן. כתוב מה עשית ומה לקחת מזה.")}
       <div class="stack">
         <textarea id="exp_text" placeholder="כתוב כאן… (מה עשית, מה הרגשת, ומה למדת)"></textarea>
         <button class="btn btnPrimary" id="exp_save">שמור</button>
