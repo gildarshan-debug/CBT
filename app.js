@@ -16,6 +16,7 @@
     .replaceAll("'","&#039;");
 
   const nowISO = () => new Date().toISOString();
+  const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
   const toLocal = (iso) => {
     const d = new Date(iso);
     // Israel locale display
@@ -259,7 +260,287 @@
     }
   };
 
-  // ---------- Rendering ----------
+  
+// ---------- Life Wheel (מעגל החיים) ----------
+const LIFE_WHEEL_KEY = "opensense_life_wheel_v1";
+
+const LIFE_DOMAINS = [
+  { key:"career", title:"קריירה - תעסוקה", priority:"must" },
+  { key:"study", title:"לימודים - השכלה", priority:"must" },
+  { key:"money", title:"מצב כלכלי", priority:"must" },
+  { key:"leisure", title:"תחביבים ופנאי", priority:"should" },
+  { key:"health", title:"בריאות", priority:"should" },
+  { key:"relationship", title:"זוגיות", priority:"" },
+  { key:"family", title:"משפחה", priority:"" },
+  { key:"friends", title:"חברים", priority:"" },
+  { key:"other", title:"אחר", priority:"" }
+];
+
+const lifeEmpty = () => ({
+  id: uid(),
+  createdAt: nowISO(),
+  note: "",
+  mode: "current",
+  items: LIFE_DOMAINS.map(d => ({
+    key: d.key,
+    title: d.title,
+    priority: d.priority,
+    current: { rating: null, desc: "" },
+    future: { rating: null, desc: "" },
+    step: ""
+  }))
+});
+
+const loadLifeSessions = () => {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LIFE_WHEEL_KEY));
+    return Array.isArray(raw) ? raw : [];
+  } catch { return []; }
+};
+const saveLifeSessions = (arr) => localStorage.setItem(LIFE_WHEEL_KEY, JSON.stringify(arr));
+
+let lifeSessions = loadLifeSessions();
+let lifeActive = lifeSessions[0] || lifeEmpty();
+
+const badge = (txt, kind) => {
+  const cls = kind === "must" ? "pillMust" : (kind === "should" ? "pillShould" : "pill");
+  return `<span class="${cls}">${esc(txt)}</span>`;
+};
+
+const formatDT = (iso) => {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString('he-IL', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+  } catch { return String(iso||""); }
+};
+
+const wheelSvg = (session) => {
+  const mode = session.mode === "future" ? "future" : "current";
+  const values = session.items.map(it => {
+    const v = it[mode].rating;
+    return (typeof v === "number" ? Math.max(0, Math.min(10, v)) : 0);
+  });
+  const N = values.length;
+  const cx = 120, cy = 120;
+  const rMax = 95;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+
+  const wedgePath = (i, val) => {
+    const angle0 = -90 + (360 / N) * i;
+    const angle1 = -90 + (360 / N) * (i + 1);
+    const r = (val / 10) * rMax;
+    const x0 = cx + r * Math.cos(toRad(angle0));
+    const y0 = cy + r * Math.sin(toRad(angle0));
+    const x1 = cx + r * Math.cos(toRad(angle1));
+    const y1 = cy + r * Math.sin(toRad(angle1));
+    return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`;
+  };
+
+  const labelPos = (i) => {
+    const angle = -90 + (360 / N) * (i + 0.5);
+    const r = 112;
+    return { x: cx + r * Math.cos(toRad(angle)), y: cy + r * Math.sin(toRad(angle)) };
+  };
+
+  const gridCircles = [2,4,6,8,10].map(v => {
+    const rr = (v/10)*rMax;
+    return `<circle cx="${cx}" cy="${cy}" r="${rr}" class="wheelGrid" />`;
+  }).join("");
+
+  const wedges = values.map((v,i)=> `<path d="${wedgePath(i,v)}" class="wheelFill" />`).join("");
+
+  const labels = session.items.map((it,i)=>{
+    const p = labelPos(i);
+    const short = it.title.split(" - ")[0];
+    return `<text x="${p.x}" y="${p.y}" text-anchor="middle" class="wheelLabel">${esc(short)}</text>`;
+  }).join("");
+
+  return `
+    <svg class="wheelSvg" viewBox="0 0 240 240" role="img" aria-label="מעגל החיים">
+      ${gridCircles}
+      <circle cx="${cx}" cy="${cy}" r="${rMax}" class="wheelOuter" />
+      ${wedges}
+      <circle cx="${cx}" cy="${cy}" r="2.5" class="wheelDot" />
+      ${labels}
+    </svg>
+  `;
+};
+
+const lifeWheelView = () => {
+  const modeLabel = lifeActive.mode === "future" ? "עתיד" : "כיום";
+  const modeOther = lifeActive.mode === "future" ? "כיום" : "עתיד";
+
+  const items = lifeActive.items.map((it, idx) => {
+    const pri = it.priority === "must" ? badge("הכרחי", "must") : (it.priority === "should" ? badge("רצוי", "should") : "");
+    const cur = it.current.rating;
+    const fut = it.future.rating;
+    const curTxt = (typeof cur === "number") ? String(cur) : "בחר";
+    const futTxt = (typeof fut === "number") ? String(fut) : "בחר";
+
+    return `
+      <div class="card" style="margin-top:12px;">
+        <div class="rowBetween" style="gap:10px; align-items:flex-start;">
+          <div>
+            <div class="h2">${esc(it.title)}</div>
+            ${pri ? `<div style="margin-top:6px;">${pri}</div>` : ""}
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="grid2">
+          <div class="kpiItem">
+            <div class="kpiTitle">דירוג כיום</div>
+            <div class="kpiValue">${esc(curTxt)}</div>
+          </div>
+          <div class="kpiItem">
+            <div class="kpiTitle">דירוג עתיד</div>
+            <div class="kpiValue">${esc(futTxt)}</div>
+          </div>
+        </div>
+
+        <div class="smallNote" style="margin-top:10px;">תיאור כיום</div>
+        <textarea class="input" data-lw-cur-desc="${idx}" placeholder="במילים קצרות...">${esc(it.current.desc || "")}</textarea>
+
+        <div class="smallNote" style="margin-top:10px;">תיאור עתיד</div>
+        <textarea class="input" data-lw-fut-desc="${idx}" placeholder="איך הייתי רוצה שזה ייראה...">${esc(it.future.desc || "")}</textarea>
+
+        <div class="smallNote" style="margin-top:10px;">צעד קטן לעבר המטרה</div>
+        <input class="input" data-lw-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step || "")}" />
+
+        <div class="grid2" style="margin-top:12px;">
+          ${sliderBlock("דירוג כיום", curTxt, "lw_cur_"+idx, "בחר מספר 1-10")}
+          ${sliderBlock("דירוג עתיד", futTxt, "lw_fut_"+idx, "בחר מספר 1-10")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const sessionsList = lifeSessions.length === 0 ? `
+    <div class="smallNote" style="margin-top:12px;">אין עדיין שמירות קודמות.</div>
+  ` : `
+    <div class="hr"></div>
+    <div class="sectionTitle">שמירות קודמות</div>
+    <div class="list">
+      ${lifeSessions.slice(0, 8).map(s => `
+        <button class="btn ghost" data-lw-open="${esc(s.id)}">
+          <span>נשמר: ${esc(formatDT(s.createdAt))}</span><span>›</span>
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  return `
+    <div class="card">
+      ${cardHeader("מעגל החיים", "מסתכלים על התמונה הרחבה, ואז בוחרים כיוון וצעד אחד.")}
+      <div class="rowBetween" style="gap:10px; flex-wrap:wrap;">
+        <div class="smallNote">מצב תצוגה: <b>${esc(modeLabel)}</b></div>
+        <button class="btn ghost" id="lw_toggle"><span>להציג ${esc(modeOther)}</span></button>
+      </div>
+      <div class="smallNote" style="margin-top:6px;">
+        ${badge("הכרחי", "must")} ${badge("רצוי", "should")}
+      </div>
+
+      <div style="margin-top:12px; display:flex; justify-content:center;">
+        ${wheelSvg(lifeActive)}
+      </div>
+
+      <div class="hr"></div>
+      <div class="sectionTitle">מילוי</div>
+      <div class="smallNote">מדרגים 1-10, מתארים בקצרה, ואז כותבים צעד אחד שאפשר להתחיל ממנו.</div>
+
+      ${items}
+
+      <div class="card" style="margin-top:12px;">
+        <div class="h2">הערה כללית (אופציונלי)</div>
+        <textarea class="input" id="lw_note" placeholder="שורה או שתיים לסיכום...">${esc(lifeActive.note || "")}</textarea>
+
+        <div class="hr"></div>
+        <div class="grid2">
+          <button class="btn btnPrimary" id="lw_save"><span>שמור</span><span>✓</span></button>
+          <button class="btn" id="lw_save_new"><span>שמור כגרסה חדשה</span><span>+</span></button>
+        </div>
+      </div>
+
+      ${sessionsList}
+
+      <button class="btn btnInline" id="lw_home"><span>חזרה לבית</span><span>⌂</span></button>
+    </div>
+  `;
+};
+
+const bindLifeWheel = () => {
+  if (ui.route !== "lifeWheel") return;
+
+  $("#lw_home")?.addEventListener("click", () => setRoute("home"));
+
+  $("#lw_toggle")?.addEventListener("click", () => {
+    lifeActive.mode = (lifeActive.mode === "future") ? "current" : "future";
+    render();
+  });
+
+  lifeActive.items.forEach((it, idx) => {
+    const rCur = $(`#lw_cur_${idx}_range`);
+    const vCur = $(`#lw_cur_${idx}`);
+    const rFut = $(`#lw_fut_${idx}_range`);
+    const vFut = $(`#lw_fut_${idx}`);
+
+    if (typeof it.current.rating === "number") rCur.value = String(it.current.rating);
+    if (typeof it.future.rating === "number") rFut.value = String(it.future.rating);
+
+    rCur?.addEventListener("input", () => {
+      it.current.rating = Number(rCur.value);
+      vCur.textContent = String(it.current.rating);
+      render();
+    });
+    rFut?.addEventListener("input", () => {
+      it.future.rating = Number(rFut.value);
+      vFut.textContent = String(it.future.rating);
+      render();
+    });
+
+    const curDesc = $$(`[data-lw-cur-desc="${idx}"]`)[0];
+    const futDesc = $$(`[data-lw-fut-desc="${idx}"]`)[0];
+    const stepEl  = $$(`[data-lw-step="${idx}"]`)[0];
+
+    curDesc?.addEventListener("input", () => it.current.desc = curDesc.value);
+    futDesc?.addEventListener("input", () => it.future.desc = futDesc.value);
+    stepEl?.addEventListener("input", () => it.step = stepEl.value);
+  });
+
+  $("#lw_note")?.addEventListener("input", () => lifeActive.note = $("#lw_note").value);
+
+  const persist = (asNew) => {
+    const any = lifeActive.items.some(it => typeof it.current.rating === "number" || typeof it.future.rating === "number");
+    if (!any) { toast("כדאי לדרג לפחות תחום אחד."); return; }
+
+    const snapshot = JSON.parse(JSON.stringify(lifeActive));
+    snapshot.createdAt = nowISO();
+    if (asNew) snapshot.id = uid();
+
+    const idx = lifeSessions.findIndex(s => s.id === snapshot.id);
+    if (idx >= 0) lifeSessions[idx] = snapshot;
+    else lifeSessions.unshift(snapshot);
+
+    lifeSessions = lifeSessions.slice(0, 30);
+    saveLifeSessions(lifeSessions);
+    lifeActive = snapshot;
+    toast("נשמר");
+    render();
+  };
+
+  $("#lw_save")?.addEventListener("click", () => persist(false));
+  $("#lw_save_new")?.addEventListener("click", () => persist(true));
+
+  $$(`[data-lw-open]`).forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-lw-open");
+      const found = lifeSessions.find(s => s.id === id);
+      if (found) { lifeActive = found; render(); }
+    });
+  });
+};
+// ---------- Rendering ----------
   const setRoute = (r) => {
     ui.route = r;
     render();
