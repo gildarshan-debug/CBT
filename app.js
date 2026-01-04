@@ -389,9 +389,7 @@ const toLocal = (iso) => {
       ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">🫧</span>
-            <span>
+          <span class="row" style="gap:10px;"> <span>
               <div style="font-weight:900;">לחץ/הצפה</div>
               <div class="p">תרגיל ויסות אחד בכל פעם</div>
             </span>
@@ -400,9 +398,7 @@ const toLocal = (iso) => {
         </button>
 
         <button class="btn" data-open="thought">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill"></span>
-            <span>
+          <span class="row" style="gap:10px;"> <span>
               <div style="font-weight:900;">מחשבה שלא עוזבת</div>
               <div class="p">בדיקת מציאות + חלופות</div>
             </span>
@@ -411,9 +407,7 @@ const toLocal = (iso) => {
         </button>
 
         <button class="btn" data-open="dilemma">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill"></span>
-            <span>
+          <span class="row" style="gap:10px;"> <span>
               <div style="font-weight:900;">דילמה</div>
               <div class="p">כיוון + צעד קטן</div>
             </span>
@@ -471,9 +465,7 @@ const toLocal = (iso) => {
           </div>
 
           <button class="btn btnPrimary" id="reg_next">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">🎲</span>
-              <span>
+            <span class="row" style="gap:10px;"> <span>
                 <div style="font-weight:900;">תן לי תרגיל</div>
                 <div class="p">תרגיל אחד בכל פעם (בלי חזרות)</div>
               </span>
@@ -508,9 +500,7 @@ const toLocal = (iso) => {
       <div class="card">
         ${cardHeader("שמור וסיים", "כשתסיים את התרגיל—נשמור את האירוע, כדי שתוכל/י לראות דפוסים לאורך זמן.")}
         <button class="btn btnPrimary" id="reg_save">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">💾</span>
-            <span>
+          <span class="row" style="gap:10px;"> <span>
               <div style="font-weight:900;">שמור וסיים</div>
               <div class="p">יישמר לפי שעה + יום + עוצמה + טריגר</div>
             </span>
@@ -598,9 +588,7 @@ const toLocal = (iso) => {
           <textarea id="th_text" placeholder="כתוב/כתבי את המחשבה שמטרידה אותך… (משפט אחד מספיק)">${esc(ui.thought.text)}</textarea>
 
           <button class="btn btnPrimary" id="th_generate">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">✨</span>
-              <span>
+            <span class="row" style="gap:10px;"> <span>
                 <div style="font-weight:900;">תן לי בדיקת מציאות</div>
                 <div class="p">ואז 2–3 מחשבות חליפיות</div>
               </span>
@@ -616,9 +604,7 @@ const toLocal = (iso) => {
               <div style="font-weight:900; margin-bottom:8px;">מחשבות חליפיות (בחר/י אחת)</div>
               ${outs[0].alts.map((a, idx) => `
                 <button class="btn btnSmall" data-alt="${idx}">
-                  <span class="row" style="gap:10px;">
-                    <span class="iconPill">🧩</span>
-                    <span style="text-align:right;">
+                  <span class="row" style="gap:10px;"> <span style="text-align:right;">
                       <div style="font-weight:900;">חלופה ${idx+1}</div>
                       <div class="p">${esc(a)}</div>
                     </span>
@@ -755,9 +741,7 @@ const toLocal = (iso) => {
           <textarea id="di_text" placeholder="כתוב/כתבי בקצרה: מה הדילמה? (2–3 שורות)">${esc(ui.dilemma.text)}</textarea>
 
           <button class="btn btnPrimary" id="di_generate">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill"></span>
-              <span>
+            <span class="row" style="gap:10px;"> <span>
                 <div style="font-weight:900;">בוא נבנה כיוון</div>
                 <div class="p">עדין, ברור, ומעשי</div>
               </span>
@@ -785,9 +769,7 @@ const toLocal = (iso) => {
               </div>
               <div class="hr"></div>
               <button class="btn btnPrimary" id="di_save">
-                <span class="row" style="gap:10px;">
-                  <span class="iconPill">💾</span>
-                  <span>
+                <span class="row" style="gap:10px;"> <span>
                     <div style="font-weight:900;">שמור וסיים</div>
                     <div class="p">דילמה + צעד קטן + עוצמה + טריגר</div>
                   </span>
@@ -1032,8 +1014,8 @@ const toLocal = (iso) => {
           <input class="input" data-lw-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step || "")}" />
 
           <div class="grid2" style="margin-top:12px;">
-            ${sliderBlock("דירוג כיום", curTxt, `lw_cur_${idx}`, "בחר מספר 1-10")}
-            ${sliderBlock("דירוג עתיד", futTxt, `lw_fut_${idx}`, "בחר מספר 1-10")}
+            ${sliderBlock("דירוג כיום", curTxt, "lw_cur_"+idx, "בחר מספר 1-10")}
+            ${sliderBlock("דירוג עתיד", futTxt, "lw_fut_"+idx, "בחר מספר 1-10")}
           </div>
         </div>
       `;
@@ -1177,9 +1159,7 @@ const toLocal = (iso) => {
           <p class="p">עדיין אין אירועים. תתחיל/י מכלי אחד, ותשמור/י — ואז נוכל לראות דפוסים.</p>
         ` : `
           <button class="btn btnDanger" id="clear_history">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">🗑️</span>
-              <span>
+            <span class="row" style="gap:10px;"> <span>
                 <div style="font-weight:900;">מחיקת היסטוריה</div>
                 <div class="p">מוחק רק מהמכשיר שלך</div>
               </span>
@@ -1625,9 +1605,7 @@ const privacyView = () => `
       <div class="hr"></div>
 
       <button class="btn ghost" id="btnSecurity">
-        <span class="row" style="gap:10px;">
-          <span class="iconPill">🔐</span>
-          <span>
+        <span class="row" style="gap:10px;"> <span>
             <div style="font-weight:900;">נעילה בתוך האפליקציה</div>
             <div class="p">הפעל/כבה קוד, זמן נעילה, שינוי קוד</div>
           </span>
