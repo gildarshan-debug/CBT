@@ -1,3 +1,5 @@
+// BUILD: 2026-01-04-uidfix3
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
