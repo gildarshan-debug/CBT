@@ -442,3 +442,19 @@ input[type="range"]{ width:100%; }
 }
 
 
+
+/* Long-term tools + Life Wheel */
+.sectionTitle{ font-size:18px; font-weight:700; margin:6px 0 10px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (max-width:520px){ .grid2{ grid-template-columns:1fr; } }
+
+.pill{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.12); opacity:.9; }
+.pillMust{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); }
+.pillShould{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03); }
+
+.wheelSvg{ width:260px; max-width:100%; height:auto; }
+.wheelGrid{ fill:none; stroke:rgba(255,255,255,.08); stroke-width:1; }
+.wheelOuter{ fill:none; stroke:rgba(255,255,255,.14); stroke-width:1.2; }
+.wheelFill{ fill:rgba(255,255,255,.10); stroke:rgba(255,255,255,.10); stroke-width:.5; }
+.wheelDot{ fill:rgba(255,255,255,.35); }
+.wheelLabel{ font-size:9px; fill:rgba(255,255,255,.65); }

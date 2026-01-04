@@ -16,7 +16,14 @@
     .replaceAll("'","&#039;");
 
   const nowISO = () => new Date().toISOString();
-  const toLocal = (iso) => {
+  
+  const formatDT = (iso) => {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString('he-IL', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+    } catch { return String(iso||''); }
+  };
+const toLocal = (iso) => {
     const d = new Date(iso);
     // Israel locale display
     return {
@@ -46,26 +53,76 @@
   };
   const saveState = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
 
+
+  // ---------- Lock (Local-only) ----------
+  const LOCK_KEY = "opensense_lock_v1";
+  const loadLock = () => {
+    try {
+      const raw = localStorage.getItem(LOCK_KEY);
+      if (!raw) return { enabled: false, hash: "", timeoutMin: 1, lastActive: Date.now() };
+      const o = JSON.parse(raw);
+      return {
+        enabled: !!o.enabled,
+        hash: String(o.hash || ""),
+        timeoutMin: Number.isFinite(Number(o.timeoutMin)) ? Number(o.timeoutMin) : 1,
+        lastActive: Number.isFinite(Number(o.lastActive)) ? Number(o.lastActive) : Date.now()
+      };
+    } catch {
+      return { enabled: false, hash: "", timeoutMin: 1, lastActive: Date.now() };
+    }
+  };
+  const saveLock = () => localStorage.setItem(LOCK_KEY, JSON.stringify(lock));
+  const lock = loadLock();
+
+  const lockState = {
+    isLocked: false,
+    pendingRoute: null
+  };
+
+  const sha256Hex = async (text) => {
+    const enc = new TextEncoder();
+    const buf = enc.encode(String(text));
+    const digest = await crypto.subtle.digest("SHA-256", buf);
+    const bytes = Array.from(new Uint8Array(digest));
+    return bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+  };
+
+  const pinValid = (pin) => /^\d{4}$/.test(String(pin || "").trim());
+
+  const lockNow = () => {
+    lockState.isLocked = true;
+    lockState.pendingRoute = ui.route || "home";
+    ui.route = "lock";
+    render();
+  };
+
+  const unlockNow = () => {
+    lockState.isLocked = false;
+    const next = lockState.pendingRoute || "home";
+    lockState.pendingRoute = null;
+    ui.route = next;
+    touchActive();
+    render();
+  };
+
+  const touchActive = () => {
+    lock.lastActive = Date.now();
+    saveLock();
+  };
+
+  const shouldAutoLock = () => {
+    if (!lock.enabled || !lock.hash) return false;
+    const t = Number(lock.timeoutMin);
+    if (!Number.isFinite(t) || t <= 0) return false; // 0 = no auto-lock
+    return (Date.now() - Number(lock.lastActive || 0)) > t * 60 * 1000;
+  };
+
+  const clearAllLocalData = () => {
+    // Removes all app content + lock config
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LOCK_KEY);
+  };
   const state = loadState();
-  // ---------- Journal (התנסויות) + Goal (יעד אישי) ----------
-  const JOURNAL_KEY = "opensense_journal_v1";
-  const GOAL_KEY = "opensense_goal_v1";
-
-  const loadJournal = () => {
-    try { return JSON.parse(localStorage.getItem(JOURNAL_KEY)) || []; }
-    catch { return []; }
-  };
-  const saveJournal = (arr) => localStorage.setItem(JOURNAL_KEY, JSON.stringify(arr));
-
-  const loadGoal = () => {
-    try { return JSON.parse(localStorage.getItem(GOAL_KEY)) || { goal:"", why:"", step:"" }; }
-    catch { return { goal:"", why:"", step:"" }; }
-  };
-  const saveGoal = (g) => localStorage.setItem(GOAL_KEY, JSON.stringify(g));
-
-  let journal = loadJournal();
-  let personalGoal = loadGoal();
-
 
   // ---------- Content ----------
   // Regulation (Pressure/Overwhelm)
@@ -101,7 +158,7 @@
   ];
 
   const REG_PREFACES = [
-    "בוא נעצור רגע. מה שעובר עליך עכשיו לא אומר עליך משהו—זה תגובה אנושית ללחץ. אנחנו עושים כאן צעד אחד, לא מהפכה.",
+    "בוא נעצור רגע. מה שעובר עליך עכשיו לא אומר עליך משהו—זה תגובה אנושית ללחץ. אנחנו עושים כאן צעד קטן, לא מהפכה.",
     "אנחנו לא חייבים להרגיש מושלם כדי להתקדם. מספיק שניצור 5% יותר יציבות עכשיו.",
     "אם יש התנגדות או חוסר אמון—זה נורמלי. אנחנו רק בודקים מה עובד לך, בקצב שלך."
   ];
@@ -333,7 +390,8 @@
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
           <span class="row" style="gap:10px;">
-                        <span>
+            <span class="iconPill">🫧</span>
+            <span>
               <div style="font-weight:900;">לחץ/הצפה</div>
               <div class="p">תרגיל ויסות אחד בכל פעם</div>
             </span>
@@ -343,7 +401,8 @@
 
         <button class="btn" data-open="thought">
           <span class="row" style="gap:10px;">
-                        <span>
+            <span class="iconPill"></span>
+            <span>
               <div style="font-weight:900;">מחשבה שלא עוזבת</div>
               <div class="p">בדיקת מציאות + חלופות</div>
             </span>
@@ -353,7 +412,8 @@
 
         <button class="btn" data-open="dilemma">
           <span class="row" style="gap:10px;">
-                        <span>
+            <span class="iconPill"></span>
+            <span>
               <div style="font-weight:900;">דילמה</div>
               <div class="p">כיוון + צעד קטן</div>
             </span>
@@ -361,26 +421,6 @@
           <span>›</span>
         </button>
       </div>
-        <button class="btn btnPrimary" data-open="journal">
-          <span class="row" style="gap:10px;">
-            <span>
-              <div style="font-weight:900;">התנסויות</div>
-              <div class="p">יומן אישי חופשי</div>
-            </span>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn btnPrimary" data-open="goal">
-          <span class="row" style="gap:10px;">
-            <span>
-              <div style="font-weight:900;">יעד אישי</div>
-              <div class="p">כיוון וצעד קדימה</div>
-            </span>
-          </span>
-          <span>›</span>
-        </button>
-
 
       <div class="hr"></div>
       <div class="kpi">
@@ -388,12 +428,25 @@
           <div class="kpiTitle">כמות אירועים בהיסטוריה</div>
           <div class="kpiValue">${state.history.length}</div>
         </div>
-</div>
+        <div class="kpiItem">
+          <div class="kpiTitle">זכירה מקומית</div>
+          <div class="kpiValue">פעיל</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
       ${cardHeader("משפט קטן לרגע הזה", "")}
       <p class="p">${esc(pick(REG_PREFACES))}</p>
+
+      <div class="hr"></div>
+      <div class="sectionTitle">כלים ארוכי טווח</div>
+      <div class="grid2">
+        <button class="btn" id="go_journal"><span>התנסויות</span><span>›</span></button>
+        <button class="btn" id="go_goal"><span>יעד אישי</span><span>›</span></button>
+        <button class="btn" id="go_lifeWheel"><span>מעגל החיים</span><span>›</span></button>
+      </div>
+
     </div>
   `;
 
@@ -404,6 +457,8 @@
       <div class="card">
         ${cardHeader("לחץ / הצפה", "נרגיע את הגוף רגע, ואז נחזיר סדר לראש.")}
         <div class="stack">
+        <button class="btn ghost" id="btnSecurity">🔐 אבטחה ונעילה</button>
+
           ${sliderBlock("עוצמה עכשיו (0–10)", ui.reg.intensity === null ? "0 – לא בחרתי" : `${ui.reg.intensity}`, "reg_int", "בחר רק אחרי שאתה מזיז את הסליידר.")}
           ${selectBlock("טריגר", "reg_trigger", TRIGGERS, ui.reg.trigger)}
           <div class="sliderWrap">
@@ -701,7 +756,8 @@
 
           <button class="btn btnPrimary" id="di_generate">
             <span class="row" style="gap:10px;">
-                            <span>
+              <span class="iconPill"></span>
+              <span>
                 <div style="font-weight:900;">בוא נבנה כיוון</div>
                 <div class="p">עדין, ברור, ומעשי</div>
               </span>
@@ -816,44 +872,286 @@
   };
 
   
-  // ---------- Journal + Goal views ----------
-  const journalView = () => `
-    <div class="card">
-      ${cardHeader("התנסויות", "")}
-      <p class="p">זה המקום לעצור רגע ולכתוב. מחשבות, רעיונות, תובנות או דברים שעבדו לך.</p>
-      <textarea id="jr_text" placeholder="כתוב כאן חופשי..."></textarea>
-      <button class="btn btnPrimary" id="jr_save"><span>שמור</span></button>
+  // ---------- Life Wheel (מעגל החיים) ----------
+  // Domains: current rating + future rating + short descriptions + a small step.
+  const LIFE_WHEEL_KEY = "opensense_life_wheel_v1";
 
-      <div class="hr"></div>
+  const LIFE_DOMAINS = [
+    { key:"career", title:"קריירה - תעסוקה", priority:"must" },
+    { key:"study", title:"לימודים - השכלה", priority:"must" },
+    { key:"money", title:"מצב כלכלי", priority:"must" },
+    { key:"leisure", title:"תחביבים ופנאי", priority:"should" },
+    { key:"health", title:"בריאות", priority:"should" },
+    { key:"relationship", title:"זוגיות", priority:"" },
+    { key:"family", title:"משפחה", priority:"" },
+    { key:"friends", title:"חברים", priority:"" },
+    { key:"other", title:"אחר", priority:"" }
+  ];
 
-      ${journal.length === 0 ? `<p class="p">עדיין אין רשומות.</p>` :
-        journal.map(x => `
-          <div class="item">
-            <div class="p" style="white-space:pre-wrap;">${esc(x.text)}</div>
-            <div class="meta">${fmtTS(x.ts)}</div>
+  const LIFE_WHEEL_EMPTY = () => ({
+    id: uid(),
+    createdAt: nowISO(),
+    note: "",
+    mode: "current",
+    items: LIFE_DOMAINS.map(d => ({
+      key: d.key,
+      title: d.title,
+      priority: d.priority,
+      current: { rating: null, desc: "" },
+      future: { rating: null, desc: "" },
+      step: ""
+    }))
+  });
+
+  const loadLifeSessions = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LIFE_WHEEL_KEY));
+      return Array.isArray(raw) ? raw : [];
+    } catch { return []; }
+  };
+  const saveLifeSessions = (arr) => localStorage.setItem(LIFE_WHEEL_KEY, JSON.stringify(arr));
+
+  let lifeSessions = loadLifeSessions();
+  let lifeActive = lifeSessions[0] || LIFE_WHEEL_EMPTY();
+
+  const badge = (txt, kind) => {
+    const cls = kind === "must" ? "pillMust" : (kind === "should" ? "pillShould" : "pill");
+    return `<span class="${cls}">${esc(txt)}</span>`;
+  };
+
+  const lifeLegend = () => `
+    <div class="smallNote" style="margin-top:4px;">
+      ${badge("הכרחי", "must")} ${badge("רצוי", "should")}
+    </div>
+  `;
+
+  const wheelSvg = (session) => {
+    const mode = session.mode === "future" ? "future" : "current";
+    const values = session.items.map(it => {
+      const v = it[mode].rating;
+      return (typeof v === "number" ? Math.max(0, Math.min(10, v)) : 0);
+    });
+    const N = values.length;
+    const cx = 120, cy = 120;
+    const rMax = 95;
+    const toRad = (deg) => (deg * Math.PI) / 180;
+
+    const wedgePath = (i, val) => {
+      const angle0 = -90 + (360 / N) * i;
+      const angle1 = -90 + (360 / N) * (i + 1);
+      const r = (val / 10) * rMax;
+      const x0 = cx + r * Math.cos(toRad(angle0));
+      const y0 = cy + r * Math.sin(toRad(angle0));
+      const x1 = cx + r * Math.cos(toRad(angle1));
+      const y1 = cy + r * Math.sin(toRad(angle1));
+      return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`;
+    };
+
+    const labelPos = (i) => {
+      const angle = -90 + (360 / N) * (i + 0.5);
+      const r = 112;
+      return { x: cx + r * Math.cos(toRad(angle)), y: cy + r * Math.sin(toRad(angle)) };
+    };
+
+    const gridCircles = [2,4,6,8,10].map(v => {
+      const rr = (v/10)*rMax;
+      return `<circle cx="${cx}" cy="${cy}" r="${rr}" class="wheelGrid" />`;
+    }).join("");
+
+    const wedges = values.map((v,i)=> `<path d="${wedgePath(i,v)}" class="wheelFill" />`).join("");
+
+    const labels = session.items.map((it,i)=>{
+      const p = labelPos(i);
+      const short = it.title.split(" - ")[0];
+      return `<text x="${p.x}" y="${p.y}" text-anchor="middle" class="wheelLabel">${esc(short)}</text>`;
+    }).join("");
+
+    return `
+      <svg class="wheelSvg" viewBox="0 0 240 240" role="img" aria-label="מעגל החיים">
+        ${gridCircles}
+        <circle cx="${cx}" cy="${cy}" r="${rMax}" class="wheelOuter" />
+        ${wedges}
+        <circle cx="${cx}" cy="${cy}" r="2.5" class="wheelDot" />
+        ${labels}
+      </svg>
+    `;
+  };
+
+  const lifeWheelView = () => {
+    const modeLabel = lifeActive.mode === "future" ? "עתיד" : "כיום";
+    const modeOther = lifeActive.mode === "future" ? "כיום" : "עתיד";
+
+    const header = `
+      ${cardHeader("מעגל החיים", "מסתכלים על התמונה הרחבה, ואז בוחרים כיוון וצעד אחד.")}
+      <div class="rowBetween" style="gap:10px; flex-wrap:wrap;">
+        <div class="smallNote">מצב תצוגה: <b>${esc(modeLabel)}</b></div>
+        <button class="btn ghost" id="lw_toggle"><span>להציג ${esc(modeOther)}</span></button>
+      </div>
+      ${lifeLegend()}
+      <div style="margin-top:12px; display:flex; justify-content:center;">
+        ${wheelSvg(lifeActive)}
+      </div>
+    `;
+
+    const items = lifeActive.items.map((it, idx) => {
+      const pri = it.priority === "must" ? badge("הכרחי", "must") : (it.priority === "should" ? badge("רצוי", "should") : "");
+      const cur = it.current.rating;
+      const fut = it.future.rating;
+      const curTxt = (typeof cur === "number") ? String(cur) : "בחר";
+      const futTxt = (typeof fut === "number") ? String(fut) : "בחר";
+
+      return `
+        <div class="card" style="margin-top:12px;">
+          <div class="rowBetween" style="gap:10px; align-items:flex-start;">
+            <div>
+              <div class="h2">${esc(it.title)}</div>
+              ${pri ? `<div style="margin-top:6px;">${pri}</div>` : ""}
+            </div>
           </div>
-        `).join("")
-      }
-    </div>
-  `;
 
-  const goalView = () => `
-    <div class="card">
-      ${cardHeader("יעד אישי", "")}
-      <p class="p">יעד הוא כיוון. אפשר לשנות ולהתאים בכל שלב.</p>
+          <div class="hr"></div>
 
-      <label class="lbl">מה היעד האישי שלי?</label>
-      <textarea id="g_goal" placeholder="כתוב במשפט או שניים...">${esc(personalGoal.goal || "")}</textarea>
+          <div class="grid2">
+            <div class="kpiItem">
+              <div class="kpiTitle">דירוג כיום</div>
+              <div class="kpiValue">${esc(curTxt)}</div>
+            </div>
+            <div class="kpiItem">
+              <div class="kpiTitle">דירוג עתיד</div>
+              <div class="kpiValue">${esc(futTxt)}</div>
+            </div>
+          </div>
 
-      <label class="lbl">למה זה חשוב לי?</label>
-      <textarea id="g_why" placeholder="משפט אחד שמחבר אותך לזה...">${esc(personalGoal.why || "")}</textarea>
+          <div class="smallNote" style="margin-top:10px;">תיאור כיום</div>
+          <textarea class="input" data-lw-cur-desc="${idx}" placeholder="במילים קצרות...">${esc(it.current.desc || "")}</textarea>
 
-      <label class="lbl">מה צעד קטן שאוכל לעשות?</label>
-      <textarea id="g_step" placeholder="צעד מינימלי, גם ביום לא מושלם...">${esc(personalGoal.step || "")}</textarea>
+          <div class="smallNote" style="margin-top:10px;">תיאור עתיד</div>
+          <textarea class="input" data-lw-fut-desc="${idx}" placeholder="איך הייתי רוצה שזה ייראה...">${esc(it.future.desc || "")}</textarea>
 
-      <button class="btn btnPrimary" id="g_save"><span>שמור יעד</span></button>
-    </div>
-  `;
+          <div class="smallNote" style="margin-top:10px;">צעד קטן לעבר המטרה</div>
+          <input class="input" data-lw-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step || "")}" />
+
+          <div class="grid2" style="margin-top:12px;">
+            ${sliderBlock("דירוג כיום", curTxt, `lw_cur_${idx}`, "בחר מספר 1-10")}
+            ${sliderBlock("דירוג עתיד", futTxt, `lw_fut_${idx}`, "בחר מספר 1-10")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    const sessionsList = lifeSessions.length === 0 ? `
+      <div class="smallNote" style="margin-top:12px;">אין עדיין שמירות קודמות.</div>
+    ` : `
+      <div class="hr"></div>
+      <div class="sectionTitle">שמירות קודמות</div>
+      <div class="list">
+        ${lifeSessions.slice(0, 8).map(s => `
+          <button class="btn ghost" data-lw-open="${esc(s.id)}">
+            <span>נשמר: ${esc(formatDT(s.createdAt))}</span><span>›</span>
+          </button>
+        `).join("")}
+      </div>
+    `;
+
+    return `
+      <div class="card">
+        ${header}
+        <div class="hr"></div>
+
+        <div class="sectionTitle">מילוי</div>
+        <div class="smallNote">מדרגים 1-10, מתארים בקצרה, ואז כותבים צעד אחד שאפשר להתחיל ממנו.</div>
+
+        ${items}
+
+        <div class="card" style="margin-top:12px;">
+          <div class="h2">הערה כללית (אופציונלי)</div>
+          <textarea class="input" id="lw_note" placeholder="שורה או שתיים לסיכום...">${esc(lifeActive.note || "")}</textarea>
+
+          <div class="hr"></div>
+          <div class="grid2">
+            <button class="btn btnPrimary" id="lw_save"><span>שמור</span><span>✓</span></button>
+            <button class="btn" id="lw_save_new"><span>שמור כגרסה חדשה</span><span>+</span></button>
+          </div>
+        </div>
+
+        ${sessionsList}
+
+        <button class="btn btnInline" id="lw_home"><span>חזרה לבית</span><span>⌂</span></button>
+      </div>
+    `;
+  };
+
+  const bindLifeWheel = () => {
+    if (ui.route !== "lifeWheel") return;
+
+    $("#lw_home")?.addEventListener("click", () => setRoute("home"));
+
+    $("#lw_toggle")?.addEventListener("click", () => {
+      lifeActive.mode = (lifeActive.mode === "future") ? "current" : "future";
+      render();
+    });
+
+    lifeActive.items.forEach((it, idx) => {
+      const rCur = $(`#lw_cur_${idx}_range`);
+      const vCur = $(`#lw_cur_${idx}`);
+      const rFut = $(`#lw_fut_${idx}_range`);
+      const vFut = $(`#lw_fut_${idx}`);
+
+      if (typeof it.current.rating === "number") rCur.value = String(it.current.rating);
+      if (typeof it.future.rating === "number") rFut.value = String(it.future.rating);
+
+      rCur?.addEventListener("input", () => {
+        it.current.rating = Number(rCur.value);
+        vCur.textContent = String(it.current.rating);
+        render();
+      });
+      rFut?.addEventListener("input", () => {
+        it.future.rating = Number(rFut.value);
+        vFut.textContent = String(it.future.rating);
+        render();
+      });
+
+      const curDesc = $$(`[data-lw-cur-desc="${idx}"]`)[0];
+      const futDesc = $$(`[data-lw-fut-desc="${idx}"]`)[0];
+      const stepEl  = $$(`[data-lw-step="${idx}"]`)[0];
+
+      curDesc?.addEventListener("input", () => it.current.desc = curDesc.value);
+      futDesc?.addEventListener("input", () => it.future.desc = futDesc.value);
+      stepEl?.addEventListener("input", () => it.step = stepEl.value);
+    });
+
+    $("#lw_note")?.addEventListener("input", () => lifeActive.note = $("#lw_note").value);
+
+    const persist = (asNew) => {
+      const any = lifeActive.items.some(it => typeof it.current.rating === "number" || typeof it.future.rating === "number");
+      if (!any) { toast("כדאי לדרג לפחות תחום אחד."); return; }
+
+      const snapshot = JSON.parse(JSON.stringify(lifeActive));
+      snapshot.createdAt = nowISO();
+      if (asNew) snapshot.id = uid();
+
+      const idx = lifeSessions.findIndex(s => s.id === snapshot.id);
+      if (idx >= 0) lifeSessions[idx] = snapshot;
+      else lifeSessions.unshift(snapshot);
+
+      lifeSessions = lifeSessions.slice(0, 30);
+      saveLifeSessions(lifeSessions);
+      lifeActive = snapshot;
+      toast("נשמר");
+      render();
+    };
+
+    $("#lw_save")?.addEventListener("click", () => persist(false));
+    $("#lw_save_new")?.addEventListener("click", () => persist(true));
+
+    $$(`[data-lw-open]`).forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-lw-open");
+        const found = lifeSessions.find(s => s.id === id);
+        if (found) { lifeActive = found; render(); }
+      });
+    });
+  };
 
 // ---------- History view ----------
   const historyView = () => {
@@ -947,6 +1245,11 @@
       });
     });
   };
+
+  const bindPrivacy = () => {
+    $("#btnSecurity")?.addEventListener("click", () => setRoute("security"));
+  };
+
 
 
   // ---------- Insights view ----------
@@ -1100,27 +1403,245 @@
     `;
   };
 
-  // ---------- Privacy view ----------
-  const privacyView = () => `
+
+  // ---------- Lock screen ----------
+  const lockView = () => `
     <div class="card">
-      ${cardHeader("פרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
+      ${cardHeader("🔐 האפליקציה נעולה", "כדי להגן על פרטיות המידע – צריך להזין קוד.")}
       <div class="stack">
         <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">איפה הנתונים נשמרים?</div>
-          <div class="p">רק במכשיר שלך (Local Storage). אין שרת. אין חשבון. אין שליחה לענן.</div>
+          <div style="font-weight:900; margin-bottom:6px;">קוד (4 ספרות)</div>
+          <input id="lockPin" class="input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="••••">
+          <div id="lockErr" class="smallNote" style="margin-top:8px; color: var(--danger, #ff6b6b); display:none;"></div>
         </div>
-        <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">מי יכול לראות?</div>
-          <div class="p">מי שיש לו גישה פיזית למכשיר פתוח. לכן כדאי לשמור את הטלפון נעול.</div>
-        </div>
-        <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">מה האפליקציה לא עושה?</div>
-          <div class="p">היא לא מאבחנת ולא מחליפה טיפול. היא נותנת כלים קצרים ומעקב עצמי.</div>
+        <button id="btnUnlock" class="btn primary">פתח</button>
+        <button id="btnForgotPin" class="btn ghost">שכחתי את הקוד</button>
+        <div class="smallNote">
+          טיפ: אם שכחת את הקוד – אפשר לאפס את האפליקציה. זה ימחק את הנתונים המקומיים (אי אפשר לשחזר).
         </div>
       </div>
     </div>
   `;
 
+  const bindLock = () => {
+    const pinEl = $("#lockPin");
+    const errEl = $("#lockErr");
+    const showErr = (msg) => {
+      if (!errEl) return;
+      errEl.style.display = "block";
+      errEl.textContent = msg;
+    };
+
+    $("#btnUnlock")?.addEventListener("click", async () => {
+      const pin = String(pinEl?.value || "").trim();
+      if (!pinValid(pin)) return showErr("הקוד חייב להיות 4 ספרות.");
+      try {
+        const h = await sha256Hex(pin);
+        if (h === lock.hash) {
+          unlockNow();
+        } else {
+          showErr("הקוד שגוי. נסה שוב.");
+        }
+      } catch {
+        showErr("שגיאה טכנית. נסה שוב.");
+      }
+    });
+
+    pinEl?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") $("#btnUnlock")?.click();
+    });
+
+    $("#btnForgotPin")?.addEventListener("click", () => {
+      confirmModal(
+        "איפוס האפליקציה",
+        "הפעולה תסיר את הנעילה ותמחק את כל הנתונים המקומיים במכשיר זה. אין אפשרות לשחזור.",
+        "איפוס והתחלה מחדש",
+        () => {
+          clearAllLocalData();
+          // Hard reload to ensure clean state
+          location.reload();
+        }
+      );
+    });
+  };
+
+  // ---------- Security & Lock settings ----------
+  const securityView = () => {
+    const enabled = !!lock.enabled;
+    const timeout = Number(lock.timeoutMin);
+    const timeoutLabel = (t) => (t<=0 ? "ללא נעילה אוטומטית" : `${t} דקה${t===1?"":"ות"}`);
+    return `
+      <div class="card">
+        ${cardHeader("🔐 אבטחה ונעילה", "נעילה מקומית מאפשרת מרחב בטוח לעבודה רגשית.")}
+        <div class="stack">
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">מצב נעילה</div>
+            <div class="row" style="justify-content:space-between; gap:12px; align-items:center;">
+              <div class="p">${enabled ? "נעילה פעילה ✅" : "נעילה כבויה"}</div>
+              <button id="toggleLock" class="btn ${enabled ? "ghost" : "primary"}">${enabled ? "כיבוי נעילה" : "הפעל נעילה"}</button>
+            </div>
+            <div class="smallNote" style="margin-top:6px;">
+              חשוב: הקוד נשמר רק במכשיר ולא ניתן לשחזור. אם הקוד יישכח – הפתרון היחיד הוא איפוס מקומי (מחיקת הנתונים).
+            </div>
+          </div>
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">נעילה אוטומטית</div>
+            <div class="smallNote" style="margin-bottom:8px;">מומלץ לבחור נעילה אוטומטית באזורים משותפים.</div>
+            <select id="lockTimeout" class="input">
+              <option value="0" ${timeout<=0?"selected":""}>ללא נעילה אוטומטית</option>
+              <option value="1" ${timeout===1?"selected":""}>אחרי 1 דקה</option>
+              <option value="5" ${timeout===5?"selected":""}>אחרי 5 דקות</option>
+            </select>
+            <div class="smallNote" style="margin-top:8px;">נבחר כרגע: <strong>${esc(timeoutLabel(timeout))}</strong></div>
+          </div>
+
+          <div class="item">
+            <div style="font-weight:900; margin-bottom:6px;">שינוי קוד</div>
+            <div class="grid2">
+              <div>
+                <div class="smallNote" style="margin-bottom:6px;">קוד נוכחי</div>
+                <input id="curPin" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+              </div>
+              <div>
+                <div class="smallNote" style="margin-bottom:6px;">קוד חדש</div>
+                <input id="newPin" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <div class="smallNote" style="margin-bottom:6px;">אימות קוד חדש</div>
+              <input id="newPin2" class="input" inputmode="numeric" maxlength="4" placeholder="••••">
+            </div>
+            <div id="secErr" class="smallNote" style="margin-top:10px; color: var(--danger, #ff6b6b); display:none;"></div>
+            <button id="btnChangePin" class="btn ghost" style="margin-top:10px;">שמור קוד חדש</button>
+          </div>
+
+          <div class="item">
+            <button id="btnBackFromSecurity" class="btn">חזרה</button>
+          </div>
+
+          <div class="smallNote">
+            האפליקציה לא שולחת מידע החוצה ולא אוספת סטטיסטיקות. כל ההגדרות נשמרות מקומית במכשיר שלך בלבד.
+          </div>
+
+        </div>
+      </div>
+    `;
+  };
+
+  const bindSecurity = () => {
+    const errEl = $("#secErr");
+    const showErr = (msg) => {
+      if (!errEl) return;
+      errEl.style.display = "block";
+      errEl.textContent = msg;
+    };
+    const clearErr = () => {
+      if (!errEl) return;
+      errEl.style.display = "none";
+      errEl.textContent = "";
+    };
+
+    $("#btnBackFromSecurity")?.addEventListener("click", () => setRoute("privacy"));
+
+    $("#lockTimeout")?.addEventListener("change", (e) => {
+      const v = Number(e.target.value);
+      lock.timeoutMin = Number.isFinite(v) ? v : 1;
+      saveLock();
+      touchActive();
+      toast("עודכן ✅");
+      render();
+    });
+
+    $("#toggleLock")?.addEventListener("click", async () => {
+      clearErr();
+      if (lock.enabled) {
+        // Disable requires current pin
+        const cur = String($("#curPin")?.value || "").trim();
+        if (!pinValid(cur)) return showErr("כדי לכבות נעילה, הזן קוד נוכחי בן 4 ספרות.");
+        const h = await sha256Hex(cur);
+        if (h !== lock.hash) return showErr("הקוד הנוכחי שגוי.");
+        lock.enabled = false;
+        saveLock();
+        toast("נעילה כובתה ✅");
+        render();
+        return;
+      }
+
+      // Enable: requires setting a new pin (use newPin/newPin2)
+      const p1 = String($("#newPin")?.value || "").trim();
+      const p2 = String($("#newPin2")?.value || "").trim();
+      if (!pinValid(p1) || !pinValid(p2)) return showErr("כדי להפעיל נעילה, הזן קוד חדש בן 4 ספרות ואימות.");
+      if (p1 !== p2) return showErr("האימות לא תואם לקוד החדש.");
+      lock.hash = await sha256Hex(p1);
+      lock.enabled = true;
+      touchActive();
+      saveLock();
+      toast("נעילה הופעלה ✅");
+      render();
+    });
+
+    $("#btnChangePin")?.addEventListener("click", async () => {
+      clearErr();
+      if (!lock.enabled || !lock.hash) return showErr("כדי לשנות קוד, יש להפעיל נעילה קודם.");
+      const cur = String($("#curPin")?.value || "").trim();
+      const p1 = String($("#newPin")?.value || "").trim();
+      const p2 = String($("#newPin2")?.value || "").trim();
+      if (!pinValid(cur)) return showErr("הזן קוד נוכחי בן 4 ספרות.");
+      const h = await sha256Hex(cur);
+      if (h !== lock.hash) return showErr("הקוד הנוכחי שגוי.");
+      if (!pinValid(p1) || !pinValid(p2)) return showErr("הקוד החדש חייב להיות 4 ספרות + אימות.");
+      if (p1 !== p2) return showErr("האימות לא תואם לקוד החדש.");
+      lock.hash = await sha256Hex(p1);
+      touchActive();
+      saveLock();
+      toast("קוד עודכן ✅");
+      render();
+    });
+  };
+
+  // ---------- Privacy view ----------
+const privacyView = () => `
+  <div class="card">
+    ${cardHeader("אבטחה ופרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
+    <div class="stack">
+
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">איפה הנתונים נשמרים?</div>
+        <div class="p">רק במכשיר שלך (Local Storage). אין שרת. אין חשבון. אין שליחה לענן.</div>
+      </div>
+
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">למי יש גישה?</div>
+        <div class="p">מי שיש לו גישה פיזית למכשיר פתוח. אם המכשיר פתוח — אפשר לראות. לכן מומלץ להפעיל נעילה בתוך האפליקציה בנוסף לנעילת המכשיר.</div>
+      </div>
+
+      <div class="item">
+        <div style="font-weight:900; margin-bottom:6px;">מה האפליקציה לא עושה?</div>
+        <div class="p">היא לא מאבחנת, לא מחליפה טיפול, ולא שולחת נתונים החוצה. זה כלי פסיכו־חינוכי ומעקב עצמי.</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <button class="btn ghost" id="btnSecurity">
+        <span class="row" style="gap:10px;">
+          <span class="iconPill">🔐</span>
+          <span>
+            <div style="font-weight:900;">נעילה בתוך האפליקציה</div>
+            <div class="p">הפעל/כבה קוד, זמן נעילה, שינוי קוד</div>
+          </span>
+        </span>
+        <span>›</span>
+      </button>
+
+      <div class="smallNote">
+        טיפ: אם בחרת להפעיל נעילה — אם שוכחים את הקוד, הפתרון היחיד הוא איפוס (זה מוחק את הנתונים המקומיים). אין שחזור ואין שרת שיכול לעזור.
+      </div>
+
+    </div>
+  </div>
+`;
   // ---------- Toast ----------
   let toastTimer = null;
   const toast = (msg) => {
@@ -1164,6 +1685,19 @@
   const render = () => {
     if (!app) return;
 
+    // Lock gate (local-only)
+    if (lock.enabled && lock.hash) {
+      if (!lockState.isLocked && shouldAutoLock()) {
+        lockNow();
+        return;
+      }
+      if (lockState.isLocked || ui.route === "lock") {
+        app.innerHTML = lockView();
+        bindLock();
+        return;
+      }
+    }
+
     let html = "";
     if (ui.route === "home") html = homeView();
     if (ui.route === "reg") html = regView();
@@ -1171,9 +1705,9 @@
     if (ui.route === "dilemma") html = dilemmaView();
     if (ui.route === "history") html = historyView();
     if (ui.route === "privacy") html = privacyView();
+    if (ui.route === "security") html = securityView();
     if (ui.route === "insights") html = insightsView();
-    if (ui.route === "journal") html = journalView();
-    if (ui.route === "goal") html = goalView();
+    if (ui.route === "lock") html = lockView();
 
     app.innerHTML = html;
 
@@ -1181,14 +1715,16 @@
     $$("[data-open='reg']").forEach(b => b.addEventListener("click", () => setRoute("reg")));
     $$("[data-open='thought']").forEach(b => b.addEventListener("click", () => setRoute("thought")));
     $$("[data-open='dilemma']").forEach(b => b.addEventListener("click", () => setRoute("dilemma")));
-    $$("[data-open='journal']").forEach(b => b.addEventListener("click", () => setRoute("journal")));
-    $$("[data-open='goal']").forEach(b => b.addEventListener("click", () => setRoute("goal")));
 
     // Bind route-specific
     if (ui.route === "reg") bindReg();
     if (ui.route === "thought") bindThought();
     if (ui.route === "dilemma") bindDilemma();
     if (ui.route === "history") bindHistory();
+    bindLifeWheel();
+    if (ui.route === "privacy") bindPrivacy();
+    if (ui.route === "security") bindSecurity();
+    if (ui.route === "lock") bindLock();
   };
 
   // ---------- Splash + SW ----------
@@ -1211,6 +1747,18 @@
   // ---------- Boot ----------
   const boot = () => {
     mountNav();
+    // Activity tracking for auto-lock
+    const activity = () => { if (lock.enabled && lock.hash && !lockState.isLocked) touchActive(); };
+    ["click","keydown","touchstart","mousemove"].forEach(evt => document.addEventListener(evt, activity, true));
+    setInterval(() => {
+      if (lock.enabled && lock.hash && !lockState.isLocked && shouldAutoLock()) lockNow();
+    }, 5000);
+
+    // Initial lock gate
+    if (lock.enabled && lock.hash) {
+      lockState.isLocked = true;
+      ui.route = "lock";
+    }
     render();
     hideSplashSoon();
     registerSW();
