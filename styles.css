@@ -19,13 +19,13 @@
   --font-body: "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 
   /* HEADINGS */
-  --font-head: "amaticsc-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
+  --font-head: "AmaticSC-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 }
 
-/* amaticsc Hebrew (local file) */
+/* AmaticSC Hebrew (local file) */
 @font-face{
-  font-family: "amaticsc-Hebrew";
-  src: url("/CBT/amaticsc.ttf") format("truetype");
+  font-family: "AmaticSC-Hebrew";
+  src: url("./amaticsc.ttf") format("truetype");
   font-display: swap;
 }
 
@@ -305,8 +305,7 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   z-index: 20;
 }
-.navBtn,
-.nav-btn{
+.navBtn{
   flex: 1 1 0;
   max-width: 240px;
   border-radius: 18px;
@@ -320,8 +319,7 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   gap:10px;
 }
-.navBtn.active,
-.nav-btn.active{
+.navBtn.active{
   background: linear-gradient(135deg, rgba(14,165,233,.28), rgba(34,197,94,.18));
   border-color: rgba(14,165,233,.35);
 }
@@ -443,7 +441,8 @@ input[type="range"]{ width:100%; }
 
 
 
-/* Long-term tools + Life Wheel */
+
+/* Life Wheel */
 .sectionTitle{ font-size:18px; font-weight:700; margin:6px 0 10px; }
 .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 @media (max-width:520px){ .grid2{ grid-template-columns:1fr; } }
