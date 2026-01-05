@@ -417,18 +417,18 @@ const toLocal = (iso) => {
           <span>›</span>
         </button>
 
-        <button class="btn" data-open="journal">
+        <button class="btn" data-open="exposures">
           <span class="row" style="gap:10px;"> <span>
-              <div style="font-weight:900;">התנסויות</div>
-              <div class="p">יומן אישי פתוח</div>
+              <div style="font-weight:900;">חשיפות</div>
+              <div class="p">יומן תרגול לאורך זמן</div>
             </span>
           </span>
           <span>›</span>
         </button>
 
-        <button class="btn" data-open="goal">
+        <button class="btn" data-open="goals">
           <span class="row" style="gap:10px;"> <span>
-              <div style="font-weight:900;">יעד אישי</div>
+              <div style="font-weight:900;">מטרות</div>
               <div class="p">כיוון, סיבה וצעד</div>
             </span>
           </span>
@@ -452,11 +452,7 @@ const toLocal = (iso) => {
           <div class="kpiTitle">כמות אירועים בהיסטוריה</div>
           <div class="kpiValue">${state.history.length}</div>
         </div>
-        <div class="kpiItem">
-          <div class="kpiTitle">זכירה מקומית</div>
-          <div class="kpiValue">פעיל</div>
-        </div>
-      </div>
+</div>
     </div>
 
     <div class="card">
@@ -978,7 +974,218 @@ const toLocal = (iso) => {
 
   const lifeWheelView = () => {
     const modeLabel = lifeActive.mode === "future" ? "עתיד" : "הווה";
-    const modeOther = lifeActive.mode === "future" ? "הווה" : "עתיד";
+    const modeOther = lifeActive.mode ===// ---------- Long-term tools: Exposures + Goals ----------
+const EXP_KEY = "bs_exposures_v1";
+const GOALS_KEY = "bs_goals_v1";
+
+const loadJSON = (key, fallback) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+const saveJSON = (key, value) => {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+};
+
+let exposures = loadJSON(EXP_KEY, []);
+let goals = loadJSON(GOALS_KEY, []);
+
+const exposuresView = () => `
+  <div class="card">
+    ${cardHeader("חשיפות", "תיעוד קצר של חשיפות שעשית. זה עוזר לנו לראות התקדמות ולחדד מה עובד.")}
+    <div class="p" style="margin-top:-6px;">רושמים בקצרה מה עשית, איך זה הרגיש, ומה למדת. בלי שיפוט.</div>
+
+    <div class="hr"></div>
+
+    <div class="field">
+      <div class="label">מה הייתה החשיפה?</div>
+      <input class="input" id="exp_title" placeholder="לדוגמה: יצאתי לקניון ל-20 דקות" />
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <div class="label">עוצמה (0-10)</div>
+        <input class="input" id="exp_intensity" type="number" min="0" max="10" step="1" placeholder="0-10" />
+      </div>
+      <div class="field">
+        <div class="label">מתי?</div>
+        <input class="input" id="exp_when" placeholder="לדוגמה: היום / אתמול / 05.01" />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">מה למדתי / מה עבד לי?</div>
+      <textarea class="input" id="exp_learn" rows="3" placeholder="משפט-שניים."></textarea>
+    </div>
+
+    <div class="grid2">
+      <button class="btn btnPrimary" id="exp_add"><span>שמירה</span><span>✓</span></button>
+      <button class="btn" id="exp_home"><span>חזרה לבית</span><span>›</span></button>
+    </div>
+  </div>
+
+  <div class="card">
+    ${cardHeader("רשומות אחרונות", "")}
+    ${exposures.length ? `
+      <div class="list">
+        ${exposures.map(it => `
+          <div class="item">
+            <div class="rowBetween">
+              <div style="font-weight:900;">${esc(it.title)}</div>
+              <span class="tag tagStrong">${esc(it.when || toLocal(it.ts).date)}</span>
+            </div>
+            <div class="pillRow" style="margin-top:8px;">
+              ${typeof it.intensity === "number" ? `<span class="tag">עוצמה: ${esc(it.intensity)}</span>` : ""}
+            </div>
+            ${it.learn ? `<div class="hr"></div><div class="p" style="white-space:pre-wrap;">${esc(it.learn)}</div>` : ""}
+            <div class="hr"></div>
+            <button class="btn ghost" data-exp-del="${esc(it.id)}">מחיקה</button>
+          </div>
+        `).join("")}
+      </div>
+    ` : `<p class="p">עדיין אין רשומות. אחרי חשיפה אחת - תעדכן פה שתי שורות וזה כבר מתחיל לעבוד.</p>`}
+  </div>
+`;
+
+const goalsView = () => `
+  <div class="card">
+    ${cardHeader("מטרות", "בוחרים כיוון אחד, ומפרקים אותו לצעד קטן שאפשר לבצע השבוע.")}
+    <div class="field">
+      <div class="label">המטרה</div>
+      <input class="input" id="g_title" placeholder="לדוגמה: לחזור להתאמן פעמיים בשבוע" />
+    </div>
+    <div class="field">
+      <div class="label">למה זה חשוב לי?</div>
+      <textarea class="input" id="g_why" rows="2" placeholder="משפט-שניים."></textarea>
+    </div>
+    <div class="field">
+      <div class="label">הצעד הבא</div>
+      <input class="input" id="g_step" placeholder="צעד ברור וקטן" />
+    </div>
+
+    <div class="grid2">
+      <button class="btn btnPrimary" id="g_add"><span>שמירה</span><span>✓</span></button>
+      <button class="btn" id="g_home"><span>חזרה לבית</span><span>›</span></button>
+    </div>
+  </div>
+
+  <div class="card">
+    ${cardHeader("מטרות פעילות", "")}
+    ${goals.filter(g=>!g.done).length ? `
+      <div class="list">
+        ${goals.filter(g=>!g.done).map(g => `
+          <div class="item">
+            <div style="font-weight:900;">${esc(g.title)}</div>
+            ${g.why ? `<div class="p" style="white-space:pre-wrap; margin-top:6px;">${esc(g.why)}</div>` : ""}
+            ${g.step ? `<div class="hr"></div><div class="p"><b>צעד הבא:</b> ${esc(g.step)}</div>` : ""}
+            <div class="hr"></div>
+            <div class="grid2">
+              <button class="btn" data-g-done="${esc(g.id)}">סימון כבוצע</button>
+              <button class="btn ghost" data-g-del="${esc(g.id)}">מחיקה</button>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    ` : `<p class="p">אין מטרות פעילות כרגע. אם עולה כיוון - תרשום, ונפרק לצעד.</p>`}
+  </div>
+
+  <div class="card">
+    ${cardHeader("מטרות שבוצעו", "")}
+    ${goals.filter(g=>g.done).length ? `
+      <div class="list">
+        ${goals.filter(g=>g.done).slice(0,20).map(g => `
+          <div class="item">
+            <div class="rowBetween">
+              <div style="font-weight:900;">${esc(g.title)}</div>
+              <span class="tag tagStrong">בוצע</span>
+            </div>
+            ${g.step ? `<div class="p" style="margin-top:6px;"><b>צעד אחרון:</b> ${esc(g.step)}</div>` : ""}
+            <div class="hr"></div>
+            <button class="btn ghost" data-g-del="${esc(g.id)}">מחיקה</button>
+          </div>
+        `).join("")}
+      </div>
+    ` : `<p class="p">עדיין לא סומנו מטרות שבוצעו. זה יגיע.</p>`}
+  </div>
+`;
+
+const bindExposures = () => {
+  if (ui.route !== "exposures") return;
+
+  $("#exp_home")?.addEventListener("click", () => setRoute("home"));
+
+  $("#exp_add")?.addEventListener("click", () => {
+    const title = ($("#exp_title")?.value || "").trim();
+    const when = ($("#exp_when")?.value || "").trim();
+    const learn = ($("#exp_learn")?.value || "").trim();
+    const intensityRaw = ($("#exp_intensity")?.value || "").trim();
+    const intensity = intensityRaw === "" ? null : Math.max(0, Math.min(10, Number(intensityRaw)));
+
+    if (!title) { toast("תכתוב/י שורה אחת מה הייתה החשיפה."); return; }
+
+    const item = { id: uid(), ts: nowISO(), title, when, learn, intensity: Number.isFinite(intensity) ? intensity : null };
+    exposures.unshift(item);
+    exposures = exposures.slice(0, 60);
+    saveJSON(EXP_KEY, exposures);
+    toast("נשמר");
+    render();
+  });
+
+  $$("[data-exp-del]").forEach(b => {
+    b.addEventListener("click", () => {
+      const id = b.getAttribute("data-exp-del");
+      exposures = exposures.filter(x => x.id !== id);
+      saveJSON(EXP_KEY, exposures);
+      toast("נמחק");
+      render();
+    });
+  });
+};
+
+const bindGoals = () => {
+  if (ui.route !== "goals") return;
+
+  $("#g_home")?.addEventListener("click", () => setRoute("home"));
+
+  $("#g_add")?.addEventListener("click", () => {
+    const title = ($("#g_title")?.value || "").trim();
+    const why = ($("#g_why")?.value || "").trim();
+    const step = ($("#g_step")?.value || "").trim();
+    if (!title) { toast("תכתוב/י שורה אחת מה המטרה."); return; }
+
+    const g = { id: uid(), ts: nowISO(), title, why, step, done: false };
+    goals.unshift(g);
+    goals = goals.slice(0, 60);
+    saveJSON(GOALS_KEY, goals);
+    toast("נשמר");
+    render();
+  });
+
+  $$("[data-g-done]").forEach(b => {
+    b.addEventListener("click", () => {
+      const id = b.getAttribute("data-g-done");
+      const g = goals.find(x => x.id === id);
+      if (g) { g.done = true; saveJSON(GOALS_KEY, goals); toast("סומן כבוצע"); render(); }
+    });
+  });
+
+  $$("[data-g-del]").forEach(b => {
+    b.addEventListener("click", () => {
+      const id = b.getAttribute("data-g-del");
+      goals = goals.filter(x => x.id !== id);
+      saveJSON(GOALS_KEY, goals);
+      toast("נמחק");
+      render();
+    });
+  });
+};
+
+ "future" ? "הווה" : "עתיד";
 
     const header = `
       ${cardHeader("מעגל החיים", "מסתכלים על התמונה הרחבה, ואז בוחרים כיוון וצעד אחד.")}
@@ -1210,17 +1417,19 @@ const toLocal = (iso) => {
 
   
   const bindHome = () => {
-    if (ui.route !== "home") return;
+  if (ui.route !== "home") return;
 
-    // Home uses data-open attributes
-    const map = {
-      reg: "regulation",
-      thought: "thought",
-      dilemma: "dilemma",
-      journal: "journal",
-      goal: "goal",
-      lifeWheel: "lifeWheel"
-    };
+  $$("[data-open]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-open");
+      // Backward-compat keys
+      if (key === "journal") return setRoute("exposures");
+      if (key === "goal") return setRoute("goals");
+      if (!key) return;
+      setRoute(key);
+    });
+  });
+};
 
     $$("[data-open]").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1686,56 +1895,56 @@ const privacyView = () => `
 
   // ---------- Main render ----------
   // No-op binds kept for backward compatibility
-  const bindJournal = () => {};
-  const bindGoal = () => {};
+  const bindJournal = () => bindExposures();
+  const bindGoal = () => bindGoals();
 
   const render = () => {
-    if (!app) return;
+  if (!app) return;
 
-    // Lock gate (local-only)
-    if (lock.enabled && lock.hash) {
-      if (!lockState.isLocked && shouldAutoLock()) {
-        lockNow();
-        return;
-      }
-      if (lockState.isLocked || ui.route === "lock") {
-        app.innerHTML = lockView();
-        bindLock();
-        return;
-      }
+  // Lock gate (local-only)
+  if (lock.enabled && lock.hash) {
+    if (!lockState.isLocked && shouldAutoLock()) {
+      lockNow();
+      return;
     }
+    if (lockState.isLocked || ui.route === "lock") {
+      app.innerHTML = lockView();
+      bindLock();
+      return;
+    }
+  }
 
-    let html = "";
-    if (ui.route === "home") html = homeView();
-    if (ui.route === "reg") html = regView();
-    if (ui.route === "thought") html = thoughtView();
-    if (ui.route === "dilemma") html = dilemmaView();
-    if (ui.route === "history") html = historyView();
-    if (ui.route === "privacy") html = privacyView();
-    if (ui.route === "security") html = securityView();
-    if (ui.route === "insights") html = insightsView();
-    if (ui.route === "lock") html = lockView();
+  let html = "";
+  if (ui.route === "home") html = homeView();
+  if (ui.route === "reg") html = regView();
+  if (ui.route === "thought") html = thoughtView();
+  if (ui.route === "dilemma") html = dilemmaView();
+  if (ui.route === "exposures") html = exposuresView();
+  if (ui.route === "goals") html = goalsView();
+  if (ui.route === "lifeWheel") html = lifeWheelView();
+  if (ui.route === "history") html = historyView();
+  if (ui.route === "privacy") html = privacyView();
+  if (ui.route === "security") html = securityView();
+  if (ui.route === "insights") html = insightsView();
+  if (ui.route === "lock") html = lockView();
 
-    app.innerHTML = html;
+  app.innerHTML = html;
 
-    // Bind home buttons
-    $$("[data-open='reg']").forEach(b => b.addEventListener("click", () => setRoute("reg")));
-    $$("[data-open='thought']").forEach(b => b.addEventListener("click", () => setRoute("thought")));
-    $$("[data-open='dilemma']").forEach(b => b.addEventListener("click", () => setRoute("dilemma")));
+  // Bind route-specific
+  if (ui.route === "home") bindHome();
+  if (ui.route === "reg") bindReg();
+  if (ui.route === "thought") bindThought();
+  if (ui.route === "dilemma") bindDilemma();
+  if (ui.route === "exposures") bindExposures();
+  if (ui.route === "goals") bindGoals();
+  if (ui.route === "lifeWheel") bindLifeWheel();
 
-    // Bind route-specific
-    if (ui.route === "reg") bindReg();
-    if (ui.route === "thought") bindThought();
-    if (ui.route === "dilemma") bindDilemma();
-    if (ui.route === "history") bindHome();
-    bindHistory();
-    bindGoal();
-    bindJournal();
-    bindLifeWheel();
-    if (ui.route === "privacy") bindPrivacy();
-    if (ui.route === "security") bindSecurity();
-    if (ui.route === "lock") bindLock();
-  };
+  // Global binds that safely early-return internally
+  bindHistory();
+  if (ui.route === "privacy") bindPrivacy();
+  if (ui.route === "security") bindSecurity();
+  if (ui.route === "lock") bindLock();
+};
 
   // ---------- Splash + SW ----------
   const hideSplashSoon = () => {
