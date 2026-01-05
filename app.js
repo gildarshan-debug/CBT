@@ -1685,6 +1685,10 @@ const privacyView = () => `
   };
 
   // ---------- Main render ----------
+  // No-op binds kept for backward compatibility
+  const bindJournal = () => {};
+  const bindGoal = () => {};
+
   const render = () => {
     if (!app) return;
 
