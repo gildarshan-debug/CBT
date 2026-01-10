@@ -460,14 +460,18 @@ input[type="range"]{ width:100%; }
 .wheelFill7{ fill: rgba(20,184,166,.14); stroke: rgba(20,184,166,.20); }
 .wheelFill8{ fill: rgba(148,163,184,.12); stroke: rgba(148,163,184,.18); }
 
-/* Life Wheel Colors */
-.lw-item:nth-child(1) { --lw-color:#6FB3B8; }
-.lw-item:nth-child(2) { --lw-color:#F4A261; }
-.lw-item:nth-child(3) { --lw-color:#8AB17D; }
-.lw-item:nth-child(4) { --lw-color:#E9C46A; }
-.lw-item:nth-child(5) { --lw-color:#B5838D; }
-.lw-item:nth-child(6) { --lw-color:#7C9EB2; }
+/* Life Wheel Palette */
+.lw-item{ --lw-color: var(--accent); border-left: 4px solid var(--lw-color); }
+.lw-title{ color: var(--lw-color); font-weight: 700; }
+.lw-slider input[type="range"]{ accent-color: var(--lw-color); }
+.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .5; }
 
-.lw-header { color: var(--lw-color); }
-.lw-slider input[type=range] { accent-color: var(--lw-color); }
-.lw-slice { background-color: var(--lw-color); }
+.lw-item[data-lw-idx="0"]{ --lw-color:#3BA7A0; }
+.lw-item[data-lw-idx="1"]{ --lw-color:#F0A34A; }
+.lw-item[data-lw-idx="2"]{ --lw-color:#7FB069; }
+.lw-item[data-lw-idx="3"]{ --lw-color:#E3B23C; }
+.lw-item[data-lw-idx="4"]{ --lw-color:#B388EB; }
+.lw-item[data-lw-idx="5"]{ --lw-color:#4EA5D9; }
+.lw-item[data-lw-idx="6"]{ --lw-color:#F26A8D; }
+.lw-item[data-lw-idx="7"]{ --lw-color:#9B9B7A; }
+.lw-item[data-lw-idx="8"]{ --lw-color:#6C757D; }
