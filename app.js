@@ -3,8 +3,6 @@
    - 3 tools: Regulation, Thought Reality Check, Dilemma
    - History grouped by day with collapse
 */
-// BUILD: 2026-01-05-1745
-
 
 (() => {
   // ---------- Utils ----------
@@ -315,49 +313,34 @@
       ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
-          <span>
-            <div style="font-weight:900;">לחץ/הצפה</div>
-            <div class="p">תרגיל ויסות אחד בכל פעם</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🫧</span>
+            <span>
+              <div style="font-weight:900;">לחץ/הצפה</div>
+              <div class="p">תרגיל ויסות אחד בכל פעם</div>
+            </span>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="thought">
-          <span>
-            <div style="font-weight:900;">מחשבה שלא עוזבת</div>
-            <div class="p">בדיקת מציאות וחלופות</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🧠</span>
+            <span>
+              <div style="font-weight:900;">מחשבה שלא עוזבת</div>
+              <div class="p">בדיקת מציאות + חלופות</div>
+            </span>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="dilemma">
-          <span>
-            <div style="font-weight:900;">דילמה</div>
-            <div class="p">כיוון + צעד קטן</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="journal">
-          <span>
-            <div style="font-weight:900;">חשיפות</div>
-            <div class="p">תיעוד קצר של התקדמות</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="goal">
-          <span>
-            <div style="font-weight:900;">מטרות</div>
-            <div class="p">מטרה, כיוון וצעד ראשון</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="lifeWheel">
-          <span>
-            <div style="font-weight:900;">מעגל החיים</div>
-            <div class="p">מיפוי תחומים ותכנית פעולה</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🧭</span>
+            <span>
+              <div style="font-weight:900;">דילמה</div>
+              <div class="p">כיוון + צעד קטן</div>
+            </span>
           </span>
           <span>›</span>
         </button>
@@ -682,7 +665,8 @@
 
           <button class="btn btnPrimary" id="di_generate">
             <span class="row" style="gap:10px;">
-                            <span>
+              <span class="iconPill">🧭</span>
+              <span>
                 <div style="font-weight:900;">בוא נבנה כיוון</div>
                 <div class="p">עדין, ברור, ומעשי</div>
               </span>
@@ -1343,8 +1327,8 @@
         <input class="input" data-life-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step||"")}" />
 
         <div class="grid2" style="margin-top:12px;">
-          ${sliderBlock("דירוג הווה", (typeof it.present==="number"? String(it.present):"בחר"), "life_p_"+idx, "בחר מספר 1-10")}
-          ${sliderBlock("דירוג עתיד", (typeof it.future==="number"? String(it.future):"בחר"), "life_f_"+idx, "בחר מספר 1-10")}
+          ${sliderBlock("דירוג הווה", (typeof it.present==="number"? String(it.present):"בחר"), "life_p_"+idx, "")}
+          ${sliderBlock("דירוג עתיד", (typeof it.future==="number"? String(it.future):"בחר"), "life_f_"+idx, "")}
         </div>
       </div>
     `).join("");
