@@ -459,3 +459,15 @@ input[type="range"]{ width:100%; }
 .wheelFill6{ fill: rgba(59,130,246,.16); stroke: rgba(59,130,246,.22); }
 .wheelFill7{ fill: rgba(20,184,166,.14); stroke: rgba(20,184,166,.20); }
 .wheelFill8{ fill: rgba(148,163,184,.12); stroke: rgba(148,163,184,.18); }
+
+/* Life Wheel Colors */
+.lw-item:nth-child(1) { --lw-color:#6FB3B8; }
+.lw-item:nth-child(2) { --lw-color:#F4A261; }
+.lw-item:nth-child(3) { --lw-color:#8AB17D; }
+.lw-item:nth-child(4) { --lw-color:#E9C46A; }
+.lw-item:nth-child(5) { --lw-color:#B5838D; }
+.lw-item:nth-child(6) { --lw-color:#7C9EB2; }
+
+.lw-header { color: var(--lw-color); }
+.lw-slider input[type=range] { accent-color: var(--lw-color); }
+.lw-slice { background-color: var(--lw-color); }
