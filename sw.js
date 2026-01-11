@@ -5,13 +5,12 @@
    - Assets: cache-first for speed
 */
 
-const CACHE_NAME = "opensense-cache-v9"; // <-- bump this on every release
+const CACHE_NAME = "opensense-cache-v8"; // <-- bump this on every release
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./lifeWheel.js",
   "./manifest.json",
   "./logo.png",
   "./amaticsc.ttf"
