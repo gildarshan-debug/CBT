@@ -1,4 +1,4 @@
-// BUILD: baseline-fixed-home6-buttons-clicks
+// BUILD: clickfix-lifeWheel-module-v1
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -314,49 +314,34 @@
       ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
-          <span>
-            <div style="font-weight:900;">לחץ/הצפה</div>
-            <div class="p">תרגיל ויסות אחד בכל פעם</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🫧</span>
+            <span>
+              <div style="font-weight:900;">לחץ/הצפה</div>
+              <div class="p">תרגיל ויסות אחד בכל פעם</div>
+            </span>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="thought">
-          <span>
-            <div style="font-weight:900;">מחשבה שלא עוזבת</div>
-            <div class="p">בדיקת מציאות + חלופות</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🧠</span>
+            <span>
+              <div style="font-weight:900;">מחשבה שלא עוזבת</div>
+              <div class="p">בדיקת מציאות + חלופות</div>
+            </span>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="dilemma">
-          <span>
-            <div style="font-weight:900;">דילמה</div>
-            <div class="p">כיוון + צעד קטן</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="journal">
-          <span>
-            <div style="font-weight:900;">חשיפות</div>
-            <div class="p">יומן אישי פתוח</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="goal">
-          <span>
-            <div style="font-weight:900;">מטרות</div>
-            <div class="p">כיוון, סיבה וצעד</div>
-          </span>
-          <span>›</span>
-        </button>
-
-        <button class="btn" data-open="lifeWheel">
-          <span>
-            <div style="font-weight:900;">מעגל החיים</div>
-            <div class="p">דירוג הווה ועתיד</div>
+          <span class="row" style="gap:10px;">
+            <span class="iconPill">🧭</span>
+            <span>
+              <div style="font-weight:900;">דילמה</div>
+              <div class="p">כיוון + צעד קטן</div>
+            </span>
           </span>
           <span>›</span>
         </button>
@@ -368,7 +353,7 @@
           <div class="kpiTitle">כמות אירועים בהיסטוריה</div>
           <div class="kpiValue">${state.history.length}</div>
         </div>
-      </div>
+</div>
     </div>
 
     <div class="card">
@@ -377,7 +362,7 @@
     </div>
   `;
 
-// ---------- Regulation ----------
+  // ---------- Regulation ----------
   const regView = () => {
     const ex = ui.reg.current;
     return `
@@ -1466,6 +1451,7 @@
     if (!app) return;
 
     let html = "";
+    const ctx = { $, $$, esc, clamp, nowISO, formatDT, sliderBlock, cardHeader, toast, ui, render, setRoute };
     if (ui.route === "home") html = homeView();
     if (ui.route === "reg") html = regView();
     if (ui.route === "thought") html = thoughtView();
@@ -1475,17 +1461,21 @@
     if (ui.route === "insights") html = insightsView();
     if (ui.route === "journal") html = exposuresView();
     if (ui.route === "goal") html = goalsView();
-    if (ui.route === "lifeWheel") html = lifeWheelView();
+    if (ui.route === "lifeWheel" && window.LifeWheel) window.LifeWheel.bind(ctx);
+app.innerHTML = html;
 
-    app.innerHTML = html;
+    // Bind home buttons
+    $$("[data-open='reg']").forEach(b => b.addEventListener("click", () => setRoute("reg")));
+    $$("[data-open='thought']").forEach(b => b.addEventListener("click", () => setRoute("thought")));
+    $$("[data-open='dilemma']").forEach(b => b.addEventListener("click", () => setRoute("dilemma")));
+    $$("[data-open='journal']").forEach(b => b.addEventListener("click", () => setRoute("journal")));
+    $$("[data-open='goal']").forEach(b => b.addEventListener("click", () => setRoute("goal")));
+    $$("[data-open='lifeWheel']").forEach(b => b.addEventListener("click", () => setRoute("lifeWheel")));
 
-    // Bind home buttons (data-open)
-    $$("[data-open]").forEach(b => b.addEventListener("click", () => {
-      const r = b.getAttribute("data-open");
-      if (r) setRoute(r);
-    }));
-
-
+    // Bind long-term tools views
+    bindExposures();
+    bindGoals();
+    bindLifeWheel();
 
 
     // Bind route-specific

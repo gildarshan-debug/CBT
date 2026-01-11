@@ -10,8 +10,14 @@
   <link rel="icon" href="./logo.png" />
   <link rel="stylesheet" href="./styles.css" />
 
+  <!-- Open Sans (regular) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+
   <!-- iOS basic -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="במחשבה שנייה" />
   <link rel="apple-touch-icon" href="./logo.png" />
 </head>
@@ -33,9 +39,7 @@
     </div>
   </header>
 
-  <main class="app" id="app">
-    <!-- injected by app.js -->
-  </main>
+  <main class="app" id="app"></main>
 
   <nav class="bottomNav" aria-label="תפריט תחתון">
     <button class="navBtn" data-route="home" aria-label="בית">
@@ -46,12 +50,23 @@
       <span class="navIcon">🕒</span>
       <span class="navLabel">היסטוריה</span>
     </button>
+   <button class="navBtn" data-route="insights" aria-label="תובנות">
+  <span class="navIcon">💡</span>
+  <span class="navLabel">תובנות</span>
+</button>
     <button class="navBtn" data-route="privacy" aria-label="פרטיות">
       <span class="navIcon">🔒</span>
       <span class="navLabel">פרטיות</span>
     </button>
   </nav>
 
+  <script src="./lifeWheel.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
+
+
+
+
+
+

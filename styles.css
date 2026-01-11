@@ -459,3 +459,11 @@ input[type="range"]{ width:100%; }
 .wheelFill6{ fill: rgba(59,130,246,.16); stroke: rgba(59,130,246,.22); }
 .wheelFill7{ fill: rgba(20,184,166,.14); stroke: rgba(20,184,166,.20); }
 .wheelFill8{ fill: rgba(148,163,184,.12); stroke: rgba(148,163,184,.18); }
+
+/* LifeWheel Visual */
+.wheelSvg{ width:260px; max-width:100%; height:auto; }
+.wheelGrid{ fill:none; stroke:rgba(255,255,255,.08); stroke-width:1; }
+.wheelOuter{ fill:none; stroke:rgba(255,255,255,.16); stroke-width:1.2; }
+.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .6; }
+.wheelDot{ fill:rgba(255,255,255,.35); }
+.wheelLabel{ font-size:9px; fill:rgba(255,255,255,.65); }
