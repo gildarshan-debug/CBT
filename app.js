@@ -1,4 +1,4 @@
-// BUILD: baseline-fixed-home6-buttons-clicks
+// BUILD: lifeWheel-colors-toggle-v1
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -1330,8 +1330,8 @@
     lifeSave(store);
 
     const itemsHtml = active.items.map((it, idx) => `
-      <div class="card" style="margin-top:12px;">
-        <div class="h2">${esc(it.title)}</div>
+      <div class="card lw-item" data-lw-idx="${idx}" style="margin-top:12px;">
+        <div class="h2 lw-title">${esc(it.title)}</div>
 
         <div class="smallNote" style="margin-top:10px;">תיאור הווה</div>
         <textarea class="input" data-life-pdesc="${idx}" placeholder="במילים קצרות...">${esc(it.presentDesc||"")}</textarea>
@@ -1343,8 +1343,8 @@
         <input class="input" data-life-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step||"")}" />
 
         <div class="grid2" style="margin-top:12px;">
-          ${sliderBlock("דירוג הווה", (typeof it.present==="number"? String(it.present):"בחר"), "life_p_"+idx, "בחר מספר 1-10")}
-          ${sliderBlock("דירוג עתיד", (typeof it.future==="number"? String(it.future):"בחר"), "life_f_"+idx, "בחר מספר 1-10")}
+          ${sliderBlock("דירוג הווה", (typeof it.present==="number"? String(it.present):"בחר"), "life_p_"+idx, "")}
+          ${sliderBlock("דירוג עתיד", (typeof it.future==="number"? String(it.future):"בחר"), "life_f_"+idx, "")}
         </div>
       </div>
     `).join("");
@@ -1371,7 +1371,7 @@
 
         ${itemsHtml}
 
-        <div class="card" style="margin-top:12px;">
+        <div class="card lw-item" data-lw-idx="${idx}" style="margin-top:12px;">
           <div class="grid2">
             <button class="btn btnPrimary" id="life_save"><span>שמור</span><span>✓</span></button>
             <button class="btn" id="life_save_new"><span>שמור כגרסה חדשה</span><span>+</span></button>
