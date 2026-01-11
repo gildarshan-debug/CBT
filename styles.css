@@ -19,13 +19,13 @@
   --font-body: "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 
   /* HEADINGS */
-  --font-head: "amaticsc-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
+  --font-head: "AmaticSC-Hebrew", "Open Sans", system-ui, -apple-system, "Segoe UI", Arial;
 }
 
-/* amaticsc Hebrew (local file) */
+/* AmaticSC Hebrew (local file) */
 @font-face{
-  font-family: "amaticsc-Hebrew";
-  src: url("/CBT/amaticsc.ttf") format("truetype");
+  font-family: "AmaticSC-Hebrew";
+  src: url("./amaticsc.ttf") format("truetype");
   font-display: swap;
 }
 
@@ -305,8 +305,7 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   z-index: 20;
 }
-.navBtn,
-.nav-btn{
+.navBtn{
   flex: 1 1 0;
   max-width: 240px;
   border-radius: 18px;
@@ -320,8 +319,7 @@ input[type="range"]{ width:100%; }
   justify-content:center;
   gap:10px;
 }
-.navBtn.active,
-.nav-btn.active{
+.navBtn.active{
   background: linear-gradient(135deg, rgba(14,165,233,.28), rgba(34,197,94,.18));
   border-color: rgba(14,165,233,.35);
 }
@@ -441,7 +439,18 @@ input[type="range"]{ width:100%; }
   opacity: 0.8;
 }
 
-/* ===== Life Wheel (מעגל החיים) ===== */
+
+
+
+/* Life Wheel */
+.sectionTitle{ font-size:18px; font-weight:700; margin:6px 0 10px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (max-width:520px){ .grid2{ grid-template-columns:1fr; } }
+
+.pill{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.12); opacity:.9; }
+.pillMust{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); }
+.pillShould{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03); }
+
 .wheelSvg{ width:260px; max-width:100%; height:auto; }
 .wheelGrid{ fill:none; stroke:rgba(255,255,255,.08); stroke-width:1; }
 .wheelOuter{ fill:none; stroke:rgba(255,255,255,.14); stroke-width:1.2; }
@@ -449,21 +458,15 @@ input[type="range"]{ width:100%; }
 .wheelDot{ fill:rgba(255,255,255,.35); }
 .wheelLabel{ font-size:9px; fill:rgba(255,255,255,.65); }
 
-/* Life Wheel segment colors */
-.wheelFill0{ fill: rgba(14,165,233,.18); stroke: rgba(14,165,233,.24); }
-.wheelFill1{ fill: rgba(34,197,94,.16); stroke: rgba(34,197,94,.22); }
-.wheelFill2{ fill: rgba(249,115,22,.16); stroke: rgba(249,115,22,.22); }
-.wheelFill3{ fill: rgba(168,85,247,.16); stroke: rgba(168,85,247,.22); }
-.wheelFill4{ fill: rgba(244,63,94,.14); stroke: rgba(244,63,94,.20); }
-.wheelFill5{ fill: rgba(234,179,8,.14); stroke: rgba(234,179,8,.20); }
-.wheelFill6{ fill: rgba(59,130,246,.16); stroke: rgba(59,130,246,.22); }
-.wheelFill7{ fill: rgba(20,184,166,.14); stroke: rgba(20,184,166,.20); }
-.wheelFill8{ fill: rgba(148,163,184,.12); stroke: rgba(148,163,184,.18); }
-
-/* LifeWheel Visual */
-.wheelSvg{ width:260px; max-width:100%; height:auto; }
-.wheelGrid{ fill:none; stroke:rgba(255,255,255,.08); stroke-width:1; }
-.wheelOuter{ fill:none; stroke:rgba(255,255,255,.16); stroke-width:1.2; }
-.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .6; }
-.wheelDot{ fill:rgba(255,255,255,.35); }
-.wheelLabel{ font-size:9px; fill:rgba(255,255,255,.65); }
+/* Range ticks (1-10) */
+.rangeTicks{
+  display:flex;
+  justify-content:space-between;
+  gap:6px;
+  margin-top:8px;
+  font-size:11px;
+  color: var(--muted);
+  user-select:none;
+}
+.rangeTicks span{ width:10%; text-align:center; }
+.wheelWedge{stroke: rgba(255,255,255,.10); stroke-width:.6;}
