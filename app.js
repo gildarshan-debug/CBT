@@ -1,3 +1,5 @@
+// BUILD: lifeWheel-cosmetic-slider-v1
+const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -414,6 +416,34 @@ const toLocal = (iso) => {
           </span>
           <span>›</span>
         </button>
+
+        <button class="btn" data-open="journal">
+          <span class="row" style="gap:10px;"> <span>
+              <div style="font-weight:900;">התנסויות</div>
+              <div class="p">יומן אישי פתוח</div>
+            </span>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button class="btn" data-open="goal">
+          <span class="row" style="gap:10px;"> <span>
+              <div style="font-weight:900;">יעד אישי</div>
+              <div class="p">כיוון, סיבה וצעד</div>
+            </span>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button class="btn" data-open="lifeWheel">
+          <span class="row" style="gap:10px;"> <span>
+              <div style="font-weight:900;">מעגל החיים</div>
+              <div class="p">דירוג כיום ועתיד</div>
+            </span>
+          </span>
+          <span>›</span>
+        </button>
+
       </div>
 
       <div class="hr"></div>
@@ -432,16 +462,7 @@ const toLocal = (iso) => {
     <div class="card">
       ${cardHeader("משפט קטן לרגע הזה", "")}
       <p class="p">${esc(pick(REG_PREFACES))}</p>
-
-      <div class="hr"></div>
-      <div class="sectionTitle">כלים ארוכי טווח</div>
-      <div class="grid2">
-        <button class="btn" id="go_journal"><span>התנסויות</span><span>›</span></button>
-        <button class="btn" id="go_goal"><span>יעד אישי</span><span>›</span></button>
-        <button class="btn" id="go_lifeWheel"><span>מעגל החיים</span><span>›</span></button>
-      </div>
-
-    </div>
+</div>
   `;
 
   // ---------- Regulation ----------
@@ -1014,8 +1035,8 @@ const toLocal = (iso) => {
           <input class="input" data-lw-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step || "")}" />
 
           <div class="grid2" style="margin-top:12px;">
-            ${sliderBlock("דירוג כיום", curTxt, "lw_cur_"+idx, "בחר מספר 1-10")}
-            ${sliderBlock("דירוג עתיד", futTxt, "lw_fut_"+idx, "בחר מספר 1-10")}
+            ${sliderBlock("דירוג כיום", curTxt, "lw_cur_"+idx, "")}
+            ${sliderBlock("דירוג עתיד", futTxt, "lw_fut_"+idx, "")}
           </div>
         </div>
       `;
@@ -1206,7 +1227,30 @@ const toLocal = (iso) => {
     `;
   };
 
-  const bindHistory = () => {
+  
+  const bindHome = () => {
+    if (ui.route !== "home") return;
+
+    // Home uses data-open attributes
+    const map = {
+      reg: "regulation",
+      thought: "thought",
+      dilemma: "dilemma",
+      journal: "journal",
+      goal: "goal",
+      lifeWheel: "lifeWheel"
+    };
+
+    $$("[data-open]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-open");
+        const route = map[key];
+        if (route) setRoute(route);
+      });
+    });
+  };
+
+const bindHistory = () => {
     const clear = $("#clear_history");
     if (clear) {
       clear.addEventListener("click", () => {
@@ -1698,7 +1742,10 @@ const privacyView = () => `
     if (ui.route === "reg") bindReg();
     if (ui.route === "thought") bindThought();
     if (ui.route === "dilemma") bindDilemma();
-    if (ui.route === "history") bindHistory();
+    if (ui.route === "history") bindHome();
+    bindHistory();
+    bindGoal();
+    bindJournal();
     bindLifeWheel();
     if (ui.route === "privacy") bindPrivacy();
     if (ui.route === "security") bindSecurity();
