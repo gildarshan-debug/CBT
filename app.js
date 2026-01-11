@@ -1,4 +1,4 @@
-// BUILD: restore-home6-noemoji-and-longterm-v1
+// BUILD: longterm-content-restored-v2
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -396,9 +396,7 @@
           </div>
 
           <button class="btn btnPrimary" id="reg_next">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">🎲</span>
-              <span>
+            <span class="row" style="gap:10px;"><span>
                 <div style="font-weight:900;">תן לי תרגיל</div>
                 <div class="p">תרגיל אחד בכל פעם (בלי חזרות)</div>
               </span>
@@ -433,9 +431,7 @@
       <div class="card">
         ${cardHeader("שמור וסיים", "כשתסיים את התרגיל—נשמור את האירוע, כדי שתוכל/י לראות דפוסים לאורך זמן.")}
         <button class="btn btnPrimary" id="reg_save">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">💾</span>
-            <span>
+          <span class="row" style="gap:10px;"><span>
               <div style="font-weight:900;">שמור וסיים</div>
               <div class="p">יישמר לפי שעה + יום + עוצמה + טריגר</div>
             </span>
@@ -523,9 +519,7 @@
           <textarea id="th_text" placeholder="כתוב/כתבי את המחשבה שמטרידה אותך… (משפט אחד מספיק)">${esc(ui.thought.text)}</textarea>
 
           <button class="btn btnPrimary" id="th_generate">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">✨</span>
-              <span>
+            <span class="row" style="gap:10px;"><span>
                 <div style="font-weight:900;">תן לי בדיקת מציאות</div>
                 <div class="p">ואז 2–3 מחשבות חליפיות</div>
               </span>
@@ -541,9 +535,7 @@
               <div style="font-weight:900; margin-bottom:8px;">מחשבות חליפיות (בחר/י אחת)</div>
               ${outs[0].alts.map((a, idx) => `
                 <button class="btn btnSmall" data-alt="${idx}">
-                  <span class="row" style="gap:10px;">
-                    <span class="iconPill">🧩</span>
-                    <span style="text-align:right;">
+                  <span class="row" style="gap:10px;"><span style="text-align:right;">
                       <div style="font-weight:900;">חלופה ${idx+1}</div>
                       <div class="p">${esc(a)}</div>
                     </span>
@@ -680,9 +672,7 @@
           <textarea id="di_text" placeholder="כתוב/כתבי בקצרה: מה הדילמה? (2–3 שורות)">${esc(ui.dilemma.text)}</textarea>
 
           <button class="btn btnPrimary" id="di_generate">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">🧭</span>
-              <span>
+            <span class="row" style="gap:10px;"><span>
                 <div style="font-weight:900;">בוא נבנה כיוון</div>
                 <div class="p">עדין, ברור, ומעשי</div>
               </span>
@@ -710,9 +700,7 @@
               </div>
               <div class="hr"></div>
               <button class="btn btnPrimary" id="di_save">
-                <span class="row" style="gap:10px;">
-                  <span class="iconPill">💾</span>
-                  <span>
+                <span class="row" style="gap:10px;"><span>
                     <div style="font-weight:900;">שמור וסיים</div>
                     <div class="p">דילמה + צעד קטן + עוצמה + טריגר</div>
                   </span>
@@ -796,7 +784,270 @@
     $("#go_home3").addEventListener("click", () => setRoute("home"));
   };
 
-  // ---------- History view ----------
+    // ---------- Long-term tools: Exposures (חשיפות) + Goals (מטרות) + Life Wheel (מעגל החיים) ----------
+  const EXPOSURES_KEY = "opensense_exposures_v1";
+  const GOALS_KEY = "opensense_goals_v1";
+  const LIFEWHEEL_KEY = "opensense_life_v1";
+
+  const loadJSON = (key, fallback) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback;
+      return JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
+  };
+  const saveJSON = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+  let exposures = loadJSON(EXPOSURES_KEY, []);
+  let goals = loadJSON(GOALS_KEY, []);
+  let life = loadJSON(LIFEWHEEL_KEY, null);
+
+  const exposuresView = () => `
+    <div class="card">
+      ${cardHeader("חשיפות", "מקום קצר לתיעוד. אפשר לכתוב חופשי.")}
+      <textarea id="exp_text" placeholder="כתוב כאן..."></textarea>
+      <button class="btn btnPrimary" id="exp_save"><span>שמור</span><span>✓</span></button>
+      <div class="hr"></div>
+      ${exposures.length === 0 ? `<p class="p">עדיין אין רשומות.</p>` : exposures.slice(0, 30).map((e,i)=>`
+        <div class="item">
+          <div class="rowBetween">
+            <div style="font-weight:900;">רשומה</div>
+            <span class="tag tagStrong">${esc(formatDT(e.ts))}</span>
+          </div>
+          <div class="p" style="white-space:pre-wrap; margin-top:8px;">${esc(e.text)}</div>
+          <button class="btn btnSmall btnDanger" data-exp-del="${i}" style="margin-top:10px;"><span>מחיקה</span><span>×</span></button>
+        </div>
+      `).join("")}
+      <button class="btn btnInline" id="exp_home"><span>חזרה לבית</span><span>⌂</span></button>
+    </div>
+  `;
+
+  const bindExposures = () => {
+    if (ui.route !== "journal") return;
+    $("#exp_home")?.addEventListener("click", () => setRoute("home"));
+    $("#exp_save")?.addEventListener("click", () => {
+      const t = ($("#exp_text")?.value || "").trim();
+      if (!t) { toast("כתוב משהו קצר."); return; }
+      exposures.unshift({ ts: nowISO(), text: t });
+      exposures = exposures.slice(0, 200);
+      saveJSON(EXPOSURES_KEY, exposures);
+      toast("נשמר");
+      render();
+    });
+    $$("[data-exp-del]").forEach(btn => btn.addEventListener("click", () => {
+      const idx = Number(btn.getAttribute("data-exp-del"));
+      exposures.splice(idx, 1);
+      saveJSON(EXPOSURES_KEY, exposures);
+      toast("נמחק");
+      render();
+    }));
+  };
+
+  const goalsView = () => `
+    <div class="card">
+      ${cardHeader("מטרות", "מטרה אחת יכולה להספיק. כיוון, סיבה וצעד ראשון.")}
+      <input id="g_title" class="input" placeholder="מה המטרה?" />
+      <textarea id="g_why" placeholder="למה זה חשוב לי?"></textarea>
+      <input id="g_step" class="input" placeholder="צעד ראשון קטן" />
+      <button class="btn btnPrimary" id="g_add"><span>הוסף מטרה</span><span>+</span></button>
+      <div class="hr"></div>
+      ${goals.length === 0 ? `<p class="p">עדיין אין מטרות.</p>` : goals.slice(0, 50).map((g,i)=>`
+        <div class="item">
+          <div class="rowBetween">
+            <div style="font-weight:900;">${esc(g.title)}</div>
+            <span class="tag tagStrong">${g.done ? "בוצע" : "פעיל"}</span>
+          </div>
+          ${g.why ? `<div class="p" style="margin-top:8px;">${esc(g.why)}</div>` : ""}
+          ${g.step ? `<div class="smallNote" style="margin-top:8px;">צעד: ${esc(g.step)}</div>` : ""}
+          <div class="pillRow" style="margin-top:10px;">
+            <button class="btn btnSmall" data-g-done="${i}"><span>${g.done ? "סמן כפעיל" : "סמן כבוצע"}</span><span>✓</span></button>
+            <button class="btn btnSmall btnDanger" data-g-del="${i}"><span>מחיקה</span><span>×</span></button>
+          </div>
+        </div>
+      `).join("")}
+      <button class="btn btnInline" id="g_home"><span>חזרה לבית</span><span>⌂</span></button>
+    </div>
+  `;
+
+  const bindGoals = () => {
+    if (ui.route !== "goal") return;
+    $("#g_home")?.addEventListener("click", () => setRoute("home"));
+    $("#g_add")?.addEventListener("click", () => {
+      const title = ($("#g_title")?.value || "").trim();
+      if (!title) { toast("כתוב מטרה קצרה."); return; }
+      const why = ($("#g_why")?.value || "").trim();
+      const step = ($("#g_step")?.value || "").trim();
+      goals.unshift({ ts: nowISO(), title, why, step, done:false });
+      goals = goals.slice(0, 200);
+      saveJSON(GOALS_KEY, goals);
+      toast("נשמר");
+      render();
+    });
+    $$("[data-g-del]").forEach(btn => btn.addEventListener("click", () => {
+      const idx = Number(btn.getAttribute("data-g-del"));
+      goals.splice(idx,1);
+      saveJSON(GOALS_KEY, goals);
+      toast("נמחק");
+      render();
+    }));
+    $$("[data-g-done]").forEach(btn => btn.addEventListener("click", () => {
+      const idx = Number(btn.getAttribute("data-g-done"));
+      goals[idx].done = !goals[idx].done;
+      saveJSON(GOALS_KEY, goals);
+      render();
+    }));
+  };
+
+  // Minimal Life Wheel (working + responsive wedges)
+  const LIFE_DOMAINS = ["קריירה - תעסוקה","לימודים - השכלה","מצב כלכלי","תחביבים ופנאי","בריאות","זוגיות","משפחה","חברים","אחר"];
+  const LIFE_COLORS = ["#7DD3FC","#A7F3D0","#FDE68A","#FBCFE8","#C4B5FD","#FDBA74","#93C5FD","#86EFAC","#D1D5DB"];
+
+  const lifeDefault = () => ({
+    id: String(Date.now()),
+    at: nowISO(),
+    mode: "present",
+    items: LIFE_DOMAINS.map((title,i)=>({
+      title, color: LIFE_COLORS[i],
+      present: null, future: null,
+      presentDesc:"", futureDesc:"", step:""
+    }))
+  });
+
+  const rgbaFromHex = (hex, a) => {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  };
+
+  const lifeGet = () => {
+    const obj = loadJSON(LIFEWHEEL_KEY, { sessions: [], active: null });
+    if (!Array.isArray(obj.sessions)) obj.sessions = [];
+    if (!obj.active) obj.active = obj.sessions[0] || lifeDefault();
+    return obj;
+  };
+
+  const lifeSvg = (session) => {
+    const which = (session.mode === "future") ? "future" : "present";
+    const values = session.items.map(it => {
+      const v = (which === "future") ? it.future : it.present;
+      return (typeof v === "number" ? clamp(v,0,10) : 0);
+    });
+    const N = values.length, cx=120, cy=120, rMax=95;
+    const toRad = (deg) => (deg*Math.PI)/180;
+    const wedgePath = (i,val) => {
+      const a0 = -90 + (360/N)*i;
+      const a1 = -90 + (360/N)*(i+1);
+      const r = (val/10)*rMax;
+      const x0 = cx + r*Math.cos(toRad(a0));
+      const y0 = cy + r*Math.sin(toRad(a0));
+      const x1 = cx + r*Math.cos(toRad(a1));
+      const y1 = cy + r*Math.sin(toRad(a1));
+      return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`;
+    };
+    const grid = [2,4,6,8,10].map(v => `<circle cx="${cx}" cy="${cy}" r="${(v/10)*rMax}" class="wheelGrid" />`).join("");
+    const wedges = values.map((v,i)=> {
+      const col = session.items[i].color;
+      const alpha = 0.12 + (0.70*(v/10));
+      return `<path d="${wedgePath(i,v)}" class="wheelWedge" style="fill:${rgbaFromHex(col, alpha.toFixed(3))};" />`;
+    }).join("");
+    return `<svg class="wheelSvg" viewBox="0 0 240 240">${grid}<circle cx="${cx}" cy="${cy}" r="${rMax}" class="wheelOuter" />${wedges}</svg>`;
+  };
+
+  const lifeWheelView = () => {
+    const obj = lifeGet();
+    const active = obj.active;
+
+    const whichLabel = (active.mode === "future") ? "עתיד" : "הווה";
+    const otherLabel = (active.mode === "future") ? "הווה" : "עתיד";
+
+    const itemsHtml = active.items.map((it, idx) => `
+      <div class="card lw-item" data-lw-idx="${idx}" style="margin-top:12px;">
+        <div class="h2 lw-title">${esc(it.title)}</div>
+
+        <div class="grid2" style="margin-top:8px;">
+          <div class="lw-slider">${sliderBlock("דירוג הווה", (typeof it.present==="number"? String(it.present):"בחר"), "life_p_"+idx, "")}</div>
+          <div class="lw-slider">${sliderBlock("דירוג עתיד", (typeof it.future==="number"? String(it.future):"בחר"), "life_f_"+idx, "")}</div>
+        </div>
+
+        <div class="smallNote" style="margin-top:10px;">תיאור הווה</div>
+        <textarea class="input" data-life-pdesc="${idx}" placeholder="במילים קצרות...">${esc(it.presentDesc||"")}</textarea>
+
+        <div class="smallNote" style="margin-top:10px;">תיאור עתיד</div>
+        <textarea class="input" data-life-fdesc="${idx}" placeholder="איך הייתי רוצה שזה ייראה...">${esc(it.futureDesc||"")}</textarea>
+
+        <div class="smallNote" style="margin-top:10px;">צעד קטן</div>
+        <input class="input" data-life-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step||"")}" />
+      </div>
+    `).join("");
+
+    return `
+      <div class="card">
+        ${cardHeader("מעגל החיים", "מסתכלים על התמונה הרחבה, ואז בוחרים כיוון וצעד אחד.")}
+        <div class="rowBetween" style="gap:10px; flex-wrap:wrap;">
+          <div class="smallNote">תצוגה: <b>${esc(whichLabel)}</b></div>
+          <button class="btn ghost" id="life_toggle"><span>להציג ${esc(otherLabel)}</span></button>
+        </div>
+        <div style="margin-top:12px; display:flex; justify-content:center;">
+          ${lifeSvg(active)}
+        </div>
+        ${itemsHtml}
+        <button class="btn btnInline" id="life_home"><span>חזרה לבית</span><span>⌂</span></button>
+      </div>
+    `;
+  };
+
+  const bindLifeWheel = () => {
+    if (ui.route !== "lifeWheel") return;
+    const obj = lifeGet();
+    const active = obj.active;
+
+    const saveLife = () => {
+      obj.active = active;
+      saveJSON(LIFEWHEEL_KEY, obj);
+    };
+
+    $("#life_home")?.addEventListener("click", () => setRoute("home"));
+    $("#life_toggle")?.addEventListener("click", () => {
+      active.mode = (active.mode === "future") ? "present" : "future";
+      saveLife();
+      render();
+    });
+
+    active.items.forEach((it, idx) => {
+      const rp = $(`#life_p_${idx}_range`);
+      const vp = $(`#life_p_${idx}`);
+      const rf = $(`#life_f_${idx}_range`);
+      const vf = $(`#life_f_${idx}`);
+
+      if (typeof it.present === "number") rp.value = String(it.present);
+      if (typeof it.future === "number") rf.value = String(it.future);
+
+      rp?.addEventListener("input", () => {
+        it.present = clamp(Number(rp.value),0,10);
+        vp.textContent = String(it.present);
+        saveLife();
+        render();
+      });
+      rf?.addEventListener("input", () => {
+        it.future = clamp(Number(rf.value),0,10);
+        vf.textContent = String(it.future);
+        saveLife();
+        render();
+      });
+
+      const pd = $$(`[data-life-pdesc="${idx}"]`)[0];
+      const fd = $$(`[data-life-fdesc="${idx}"]`)[0];
+      const st = $$(`[data-life-step="${idx}"]`)[0];
+      pd?.addEventListener("input", () => { it.presentDesc = pd.value; saveLife(); });
+      fd?.addEventListener("input", () => { it.futureDesc = fd.value; saveLife(); });
+      st?.addEventListener("input", () => { it.step = st.value; saveLife(); });
+    });
+  };
+
+// ---------- History view ----------
   const historyView = () => {
     const groups = groupHistoryByDay();
     const total = state.history.length;
@@ -820,9 +1071,7 @@
           <p class="p">עדיין אין אירועים. תתחיל/י מכלי אחד, ותשמור/י — ואז נוכל לראות דפוסים.</p>
         ` : `
           <button class="btn btnDanger" id="clear_history">
-            <span class="row" style="gap:10px;">
-              <span class="iconPill">🗑️</span>
-              <span>
+            <span class="row" style="gap:10px;"><span>
                 <div style="font-weight:900;">מחיקת היסטוריה</div>
                 <div class="p">מוחק רק מהמכשיר שלך</div>
               </span>
@@ -1113,6 +1362,9 @@
     if (ui.route === "history") html = historyView();
     if (ui.route === "privacy") html = privacyView();
     if (ui.route === "insights") html = insightsView();
+    if (ui.route === "journal") html = exposuresView();
+    if (ui.route === "goal") html = goalsView();
+    if (ui.route === "lifeWheel") html = lifeWheelView();
 
     app.innerHTML = html;
 
