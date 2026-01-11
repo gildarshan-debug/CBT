@@ -1,4 +1,4 @@
-// BUILD: longterm-content-restored-v4-fixed
+// BUILD: restore-global-click-routing-20260111-184144
     const updateLifeSvg = () => {
       const which = (active.mode === "future") ? "future" : "present";
       const wrap = document.getElementById("life_svg_wrap");
@@ -17,7 +17,23 @@
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
   const esc = (s) => (s ?? "").toString()
-    .replaceAll("&","&amp;")
+    .replaceAll("&","&amp;
+
+  // ---------- Global click routing (robust) ----------
+  // Ensures buttons work even if a render forgets to bind.
+  document.addEventListener("click", (e) => {
+    const openBtn = e.target && e.target.closest ? e.target.closest("[data-open]") : null;
+    if (openBtn) {
+      const r = openBtn.getAttribute("data-open");
+      if (r && typeof setRoute === "function") setRoute(r);
+    }
+    const navBtn = e.target && e.target.closest ? e.target.closest("[data-route]") : null;
+    if (navBtn) {
+      const r = navBtn.getAttribute("data-route");
+      if (r && typeof setRoute === "function") setRoute(r);
+    }
+  }, true);
+")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
