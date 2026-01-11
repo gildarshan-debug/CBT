@@ -5,67 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0EA5E9" />
   <title>במחשבה שנייה</title>
-
   <link rel="manifest" href="./manifest.json" />
-  <link rel="icon" href="./logo.png" />
+  <link rel="icon" href="./logo.jpg" />
   <link rel="stylesheet" href="./styles.css" />
-
-  <!-- Open Sans (regular) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
-
-  <!-- iOS basic -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="במחשבה שנייה" />
-  <link rel="apple-touch-icon" href="./logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-  <div id="splash" class="splash" aria-hidden="true">
-    <img src="./logo.png" class="splashLogo" alt="לוגו" />
+  <div id="splash" class="splash">
+    <img src="./logo.jpg" class="splashLogo" alt="לוגו" />
     <div class="splashText">במחשבה שנייה</div>
-    <div class="splashSub">כלים קצרים לוויסות, בדיקת מציאות וקבלת החלטות</div>
+    <div class="splashSub">כלים לוויסות ובדיקת מציאות</div>
   </div>
 
   <header class="topbar">
     <div class="brand">
-      <img src="./logo.png" class="brandLogo" alt="לוגו" />
+      <img src="./logo.jpg" class="brandLogo" alt="לוגו" />
       <div class="brandText">
         <div class="brandTitle">במחשבה שנייה</div>
-        <div class="brandTag">אנחנו עושים את זה יחד, צעד קטן בכל פעם</div>
       </div>
     </div>
   </header>
 
   <main class="app" id="app"></main>
 
-  <nav class="bottomNav" aria-label="תפריט תחתון">
-    <button class="navBtn" data-route="home" aria-label="בית">
+  <nav class="bottomNav">
+    <button class="navBtn active" data-route="home">
       <span class="navIcon">⌂</span>
       <span class="navLabel">בית</span>
     </button>
-    <button class="navBtn" data-route="history" aria-label="היסטוריה">
+    <button class="navBtn" data-route="lifewheel">
+      <span class="navIcon">🎡</span>
+      <span class="navLabel">גלגל החיים</span>
+    </button>
+    <button class="navBtn" data-route="history">
       <span class="navIcon">🕒</span>
       <span class="navLabel">היסטוריה</span>
-    </button>
-   <button class="navBtn" data-route="insights" aria-label="תובנות">
-  <span class="navIcon">💡</span>
-  <span class="navLabel">תובנות</span>
-</button>
-    <button class="navBtn" data-route="privacy" aria-label="פרטיות">
-      <span class="navIcon">🔒</span>
-      <span class="navLabel">פרטיות</span>
     </button>
   </nav>
 
   <script src="./app.js"></script>
 </body>
 </html>
-
-
-
-
-
-

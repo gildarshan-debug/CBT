@@ -1,13 +1,12 @@
 {
   "name": "במחשבה שנייה",
   "short_name": "במחשבה שנייה",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0ea5e9",
   "icons": [
-    { "src": "./logo.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "./logo.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "./logo.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "./logo.jpg", "sizes": "512x512", "type": "image/jpeg" }
   ]
 }
