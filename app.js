@@ -1,4 +1,4 @@
-// BUILD: clickfix-lifeWheel-visuals-v1
+// BUILD: restore-home6-noemoji-and-longterm-v1
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -314,34 +314,49 @@
       ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
       <div class="grid2">
         <button class="btn btnPrimary" data-open="reg">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">🫧</span>
-            <span>
-              <div style="font-weight:900;">לחץ/הצפה</div>
-              <div class="p">תרגיל ויסות אחד בכל פעם</div>
-            </span>
+          <span>
+            <div style="font-weight:900;">לחץ/הצפה</div>
+            <div class="p">תרגיל ויסות אחד בכל פעם</div>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="thought">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">🧠</span>
-            <span>
-              <div style="font-weight:900;">מחשבה שלא עוזבת</div>
-              <div class="p">בדיקת מציאות + חלופות</div>
-            </span>
+          <span>
+            <div style="font-weight:900;">מחשבה שלא עוזבת</div>
+            <div class="p">בדיקת מציאות + חלופות</div>
           </span>
           <span>›</span>
         </button>
 
         <button class="btn" data-open="dilemma">
-          <span class="row" style="gap:10px;">
-            <span class="iconPill">🧭</span>
-            <span>
-              <div style="font-weight:900;">דילמה</div>
-              <div class="p">כיוון + צעד קטן</div>
-            </span>
+          <span>
+            <div style="font-weight:900;">דילמה</div>
+            <div class="p">כיוון + צעד קטן</div>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button class="btn" data-open="journal">
+          <span>
+            <div style="font-weight:900;">חשיפות</div>
+            <div class="p">יומן אישי פתוח</div>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button class="btn" data-open="goal">
+          <span>
+            <div style="font-weight:900;">מטרות</div>
+            <div class="p">כיוון, סיבה וצעד</div>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button class="btn" data-open="lifeWheel">
+          <span>
+            <div style="font-weight:900;">מעגל החיים</div>
+            <div class="p">דירוג הווה ועתיד</div>
           </span>
           <span>›</span>
         </button>
@@ -353,10 +368,6 @@
           <div class="kpiTitle">כמות אירועים בהיסטוריה</div>
           <div class="kpiValue">${state.history.length}</div>
         </div>
-        <div class="kpiItem">
-          <div class="kpiTitle">זכירה מקומית</div>
-          <div class="kpiValue">פעיל</div>
-        </div>
       </div>
     </div>
 
@@ -366,7 +377,7 @@
     </div>
   `;
 
-  // ---------- Regulation ----------
+// ---------- Regulation ----------
   const regView = () => {
     const ex = ui.reg.current;
     return `
@@ -1106,9 +1117,10 @@
     app.innerHTML = html;
 
     // Bind home buttons
-    $$("[data-open='reg']").forEach(b => b.addEventListener("click", () => setRoute("reg")));
-    $$("[data-open='thought']").forEach(b => b.addEventListener("click", () => setRoute("thought")));
-    $$("[data-open='dilemma']").forEach(b => b.addEventListener("click", () => setRoute("dilemma")));
+    $$("[data-open]").forEach(b => b.addEventListener("click", () => {
+      const r = b.getAttribute("data-open");
+      if (r) setRoute(r);
+    }));
 
     // Bind route-specific
     if (ui.route === "reg") bindReg();
