@@ -1,11 +1,4 @@
-// BUILD: restore-global-click-routing-20260111-184144
-    const updateLifeSvg = () => {
-      const which = (active.mode === "future") ? "future" : "present";
-      const wrap = document.getElementById("life_svg_wrap");
-      if (!wrap) return;
-      wrap.innerHTML = wheelSvg(active, which);
-    };
-// BUILD: longterm-content-restored-v3-lifewheel-ticks-colors
+// BUILD: longterm-content-restored-v2
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -17,23 +10,7 @@
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
   const esc = (s) => (s ?? "").toString()
-    .replaceAll("&","&amp;
-
-  // ---------- Global click routing (robust) ----------
-  // Ensures buttons work even if a render forgets to bind.
-  document.addEventListener("click", (e) => {
-    const openBtn = e.target && e.target.closest ? e.target.closest("[data-open]") : null;
-    if (openBtn) {
-      const r = openBtn.getAttribute("data-open");
-      if (r && typeof setRoute === "function") setRoute(r);
-    }
-    const navBtn = e.target && e.target.closest ? e.target.closest("[data-route]") : null;
-    if (navBtn) {
-      const r = navBtn.getAttribute("data-route");
-      if (r && typeof setRoute === "function") setRoute(r);
-    }
-  }, true);
-")
+    .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
@@ -286,8 +263,8 @@
   // ---------- Rendering ----------
   const setRoute = (r) => {
     ui.route = r;
-    updateLifeSvg();
-$$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").forEach(b => b.classList.toggle("active", b.dataset.route === r));
+    render();
+    $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").forEach(b => b.classList.toggle("active", b.dataset.route === r));
   };
 
   const mountNav = () => {
@@ -317,8 +294,6 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
         <div class="sliderVal" id="${esc(id)}">${esc(valueText)}</div>
       </div>
       <input type="range" min="0" max="10" step="1" value="0" id="${esc(id)}_range" />
-      <div class="rangeTicks" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
-      
       ${note ? `<div class="smallNote" style="margin-top:6px;">${esc(note)}</div>` : ""}
     </div>
   `;
@@ -491,8 +466,8 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
 
     $("#reg_next").addEventListener("click", () => {
       ui.reg.current = avoidPick("reg", REG_EXERCISES);
-      updateLifeSvg();
-// focus exercise title area
+      render();
+      // focus exercise title area
       setTimeout(() => window.scrollTo({ top: 0, behavior:"smooth" }), 80);
     });
 
@@ -954,40 +929,24 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
     return obj;
   };
 
-  const wheelSvg = (session, which) => {
+  const lifeSvg = (session) => {
+    const which = (session.mode === "future") ? "future" : "present";
     const values = session.items.map(it => {
       const v = (which === "future") ? it.future : it.present;
       return (typeof v === "number" ? clamp(v,0,10) : 0);
     });
-
-    const N = values.length;
-    const cx = 120, cy = 120;
-    const rMax = 95;
-    const toRad = (deg) => (deg * Math.PI) / 180;
-
-    const wedgePath = (i, val) => {
-      const angle0 = -90 + (360 / N) * i;
-      const angle1 = -90 + (360 / N) * (i + 1);
-      const r = (val / 10) * rMax;
-      const x0 = cx + r * Math.cos(toRad(angle0));
-      const y0 = cy + r * Math.sin(toRad(angle0));
-      const x1 = cx + r * Math.cos(toRad(angle1));
-      const y1 = cy + r * Math.sin(toRad(angle1));
+    const N = values.length, cx=120, cy=120, rMax=95;
+    const toRad = (deg) => (deg*Math.PI)/180;
+    const wedgePath = (i,val) => {
+      const a0 = -90 + (360/N)*i;
+      const a1 = -90 + (360/N)*(i+1);
+      const r = (val/10)*rMax;
+      const x0 = cx + r*Math.cos(toRad(a0));
+      const y0 = cy + r*Math.sin(toRad(a0));
+      const x1 = cx + r*Math.cos(toRad(a1));
+      const y1 = cy + r*Math.sin(toRad(a1));
       return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`;
     };
-
-    const labelPos = (i) => {
-      const angle = -90 + (360 / N) * (i + 0.5);
-      const r = 112;
-      return { x: cx + r * Math.cos(toRad(angle)), y: cy + r * Math.sin(toRad(angle)) };
-    };
-
-    const rgbaFromHex = (hex, a) => {
-      const r = parseInt(hex.slice(1,3),16);
-      const g = parseInt(hex.slice(3,5),16);
-      const b = parseInt(hex.slice(5,7),16);
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-  };
     const grid = [2,4,6,8,10].map(v => `<circle cx="${cx}" cy="${cy}" r="${(v/10)*rMax}" class="wheelGrid" />`).join("");
     const wedges = values.map((v,i)=> {
       const col = session.items[i].color;
@@ -1031,7 +990,7 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
           <div class="smallNote">תצוגה: <b>${esc(whichLabel)}</b></div>
           <button class="btn ghost" id="life_toggle"><span>להציג ${esc(otherLabel)}</span></button>
         </div>
-        <div id="life_svg_wrap" style="margin-top:12px; display:flex; justify-content:center;">
+        <div style="margin-top:12px; display:flex; justify-content:center;">
           ${lifeSvg(active)}
         </div>
         ${itemsHtml}
@@ -1053,8 +1012,7 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
     $("#life_home")?.addEventListener("click", () => setRoute("home"));
     $("#life_toggle")?.addEventListener("click", () => {
       active.mode = (active.mode === "future") ? "present" : "future";
-      store.active = active;
-      lifeSave(store);
+      saveLife();
       render();
     });
 
@@ -1070,15 +1028,13 @@ $$("button.navBtn, button.nav-btn, [data-route].navBtn, [data-route].nav-btn").f
       rp?.addEventListener("input", () => {
         it.present = clamp(Number(rp.value),0,10);
         vp.textContent = String(it.present);
-        render();
-      saveLife();
+        saveLife();
         render();
       });
       rf?.addEventListener("input", () => {
         it.future = clamp(Number(rf.value),0,10);
         vf.textContent = String(it.future);
-        render();
-      saveLife();
+        saveLife();
         render();
       });
 
