@@ -1,4 +1,4 @@
-// BUILD: baseline-lifeWheel-ticks-wedges-v1
+// BUILD: baseline-lifeWheel-slider-link-v1
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -930,7 +930,7 @@
     return obj;
   };
 
-  const lifeSvg = (session) => {
+  const wheelSvg = (session) => {
     const which = (session.mode === "future") ? "future" : "present";
     const values = session.items.map(it => {
       const v = (which === "future") ? it.future : it.present;
@@ -949,9 +949,10 @@
       return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`;
     };
     const grid = [2,4,6,8,10].map(v => `<circle cx="${cx}" cy="${cy}" r="${(v/10)*rMax}" class="wheelGrid" />`).join("");
-    const wedges = values.map((v,i)=> {
-      const col = session.items[i].color;
-      const alpha = 0.12 + (0.70*(v/10));
+    const wedges = values.map((v,i)=>{
+      const it = session.items[i];
+      const col = it.color || "#60A5FA";
+      const alpha = 0.15 + 0.7*(v/10);
       return `<path d="${wedgePath(i,v)}" class="wheelWedge" style="fill:${rgbaFromHex(col, alpha.toFixed(3))};" />`;
     }).join("");
     const labels = session.items.map((it,i)=>{ const angle = -90 + (360/N)*(i+0.5); const rr = 112; const x = cx + rr*Math.cos(toRad(angle)); const y = cy + rr*Math.sin(toRad(angle)); const short = it.title.split(" - ")[0]; return `<text x="${x}" y="${y}" text-anchor="middle" class="wheelLabel">${esc(short)}</text>`; }).join("");
@@ -992,8 +993,8 @@
           <div class="smallNote">תצוגה: <b>${esc(whichLabel)}</b></div>
           <button class="btn ghost" id="life_toggle"><span>להציג ${esc(otherLabel)}</span></button>
         </div>
-        <div style="margin-top:12px; display:flex; justify-content:center;">
-          ${lifeSvg(active)}
+        <div id="life_svg_wrap" style="margin-top:12px; display:flex; justify-content:center;">
+          ${wheelSvg(active)}
         </div>
         ${itemsHtml}
         <button class="btn btnInline" id="life_home"><span>חזרה לבית</span><span>⌂</span></button>
@@ -1002,6 +1003,13 @@
   };
 
   const bindLifeWheel = () => {
+    const updateLifeWheelSvg = () => {
+      const wrap = document.getElementById("life_svg_wrap");
+      if (!wrap) return;
+      const which = (active.mode === "future") ? "future" : "present";
+      wrap.innerHTML = wheelSvg(active, which);
+    };
+
     if (ui.route !== "lifeWheel") return;
     const obj = lifeGet();
     const active = obj.active;
@@ -1013,7 +1021,7 @@
 
     $("#life_home")?.addEventListener("click", () => setRoute("home"));
     $("#life_toggle")?.addEventListener("click", () => {
-      active.mode = (active.mode === "future") ? "present" : "future";
+      active.mode = (active.mode === "future") ? "present" : "future"; updateLifeWheelSvg();
       saveLife();
       render();
     });
