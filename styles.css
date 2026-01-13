@@ -457,3 +457,19 @@ input[type="range"]{ width:100%; }
 .wheelFill{ fill:rgba(255,255,255,.10); stroke:rgba(255,255,255,.10); stroke-width:.5; }
 .wheelDot{ fill:rgba(255,255,255,.35); }
 .wheelLabel{ font-size:9px; fill:rgba(255,255,255,.65); }
+
+
+/* LifeWheel wedges */
+.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .6; }
+
+/* Slider tick labels (1-10) */
+.rangeTicks{
+  display:flex;
+  justify-content:space-between;
+  gap:4px;
+  margin-top:8px;
+  font-size:11px;
+  color: var(--muted);
+  user-select:none;
+}
+.rangeTicks span{ width:10%; text-align:center; }

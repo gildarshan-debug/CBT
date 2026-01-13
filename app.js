@@ -1,4 +1,4 @@
-// BUILD: longterm-content-restored-v2
+// BUILD: baseline-lifeWheel-ticks-wedges-v1
 /* OpenSense - PWA CBT micro-tools (Hebrew, RTL)
    - Local-only storage
    - 3 tools: Regulation, Thought Reality Check, Dilemma
@@ -294,6 +294,7 @@
         <div class="sliderVal" id="${esc(id)}">${esc(valueText)}</div>
       </div>
       <input type="range" min="0" max="10" step="1" value="0" id="${esc(id)}_range" />
+      <div class="rangeTicks" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
       ${note ? `<div class="smallNote" style="margin-top:6px;">${esc(note)}</div>` : ""}
     </div>
   `;
@@ -953,7 +954,8 @@
       const alpha = 0.12 + (0.70*(v/10));
       return `<path d="${wedgePath(i,v)}" class="wheelWedge" style="fill:${rgbaFromHex(col, alpha.toFixed(3))};" />`;
     }).join("");
-    return `<svg class="wheelSvg" viewBox="0 0 240 240">${grid}<circle cx="${cx}" cy="${cy}" r="${rMax}" class="wheelOuter" />${wedges}</svg>`;
+    const labels = session.items.map((it,i)=>{ const angle = -90 + (360/N)*(i+0.5); const rr = 112; const x = cx + rr*Math.cos(toRad(angle)); const y = cy + rr*Math.sin(toRad(angle)); const short = it.title.split(" - ")[0]; return `<text x="${x}" y="${y}" text-anchor="middle" class="wheelLabel">${esc(short)}</text>`; }).join("");
+    return `<svg class="wheelSvg" viewBox="0 0 240 240">${grid}<circle cx="${cx}" cy="${cy}" r="${rMax}" class="wheelOuter" />${wedges}<circle cx="${cx}" cy="${cy}" r="2.5" class="wheelDot" />${labels}</svg>`;
   };
 
   const lifeWheelView = () => {
