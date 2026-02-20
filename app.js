@@ -1391,7 +1391,7 @@
     if (ui.route === "history") bindHistory();
   };
 
-  // ---------- Splash + SW ----------
+  // ---------- Splash + Service Worker ----------
   const hideSplashSoon = () => {
     const s = $("#splash");
     if (!s) return;
@@ -1401,6 +1401,7 @@
   const registerSW = async () => {
     try {
       if ("serviceWorker" in navigator) {
+        // Keep a single canonical service worker entry-point.
         await navigator.serviceWorker.register("./sw.js");
       }
     } catch {
