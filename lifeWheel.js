@@ -187,6 +187,33 @@
 
     const { store, sessions, active } = getStore(ctx.nowISO);
 
+    const cx = 120, cy = 120;
+    const rMax = 95;
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const wedgePath = (idx, value) => {
+      const count = active.items.length;
+      const angle0 = -90 + (360 / count) * idx;
+      const angle1 = -90 + (360 / count) * (idx + 1);
+      const radius = (value / 10) * rMax;
+      const x0 = cx + radius * Math.cos(toRad(angle0));
+      const y0 = cy + radius * Math.sin(toRad(angle0));
+      const x1 = cx + radius * Math.cos(toRad(angle1));
+      const y1 = cy + radius * Math.sin(toRad(angle1));
+      return `M ${cx} ${cy} L ${x0} ${y0} A ${radius} ${radius} 0 0 1 ${x1} ${y1} Z`;
+    };
+    const updateWedge = (idx) => {
+      const wedge = document.querySelector(`.wheelWedge[data-w="${idx}"]`);
+      if (!wedge) return;
+      const modeKey = (active.mode === "future") ? "future" : "present";
+      const item = active.items[idx];
+      const raw = (modeKey === "future") ? item.future : item.present;
+      const value = (typeof raw === "number") ? ctx.clamp(raw, 0, 10) : 0;
+      const color = item.color || "#FFFFFF";
+      const alpha = 0.12 + (0.70 * (value / 10));
+      wedge.setAttribute("d", wedgePath(idx, value));
+      wedge.style.fill = rgbaFromHex(color, alpha.toFixed(3));
+    };
+
     const persist = (asNew) => {
       const snapshot = JSON.parse(JSON.stringify(active));
       snapshot.at = ctx.nowISO();
@@ -224,14 +251,14 @@
         vp.textContent = String(it.present);
         store.active = active;
         save(store);
-        ctx.render();
+        if (active.mode !== "future") updateWedge(idx);
       });
       rf?.addEventListener("input", () => {
         it.future = ctx.clamp(Number(rf.value),0,10);
         vf.textContent = String(it.future);
         store.active = active;
         save(store);
-        ctx.render();
+        if (active.mode === "future") updateWedge(idx);
       });
 
       const pd = document.querySelector(`[data-life-pdesc="${idx}"]`);

@@ -460,7 +460,7 @@ input[type="range"]{ width:100%; }
 
 
 /* LifeWheel wedges */
-.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .6; }
+.wheelWedge{ stroke: rgba(255,255,255,.10); stroke-width: .6; transition: d .16s ease, fill .16s ease; }
 
 /* Slider tick labels (1-10) */
 .rangeTicks{
