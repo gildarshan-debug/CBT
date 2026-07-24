@@ -789,6 +789,7 @@
   const EXPOSURES_KEY = "opensense_exposures_v1";
   const GOALS_KEY = "opensense_goals_v1";
   const LIFEWHEEL_KEY = "opensense_life_v1";
+  const APP_LOCK_KEY = "opensense_app_lock_v1";
 
   const loadJSON = (key, fallback) => {
     try {
@@ -800,6 +801,23 @@
     }
   };
   const saveJSON = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+  const getLockConfig = () => loadJSON(APP_LOCK_KEY, null);
+  const makeSalt = () => {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return [...bytes].map(b => b.toString(16).padStart(2, "0")).join("");
+  };
+  const hashPin = async (pin, salt) => {
+    const data = new TextEncoder().encode(`${salt}:${pin}`);
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
+  };
+  const isValidPin = (pin) => /^\d{4,6}$/.test(pin);
+  const verifyPin = async (pin, config = getLockConfig()) =>
+    !!config && (await hashPin(pin, config.salt)) === config.hash;
+
+  let appLocked = !!getLockConfig();
 
   let exposures = loadJSON(EXPOSURES_KEY, []);
   let goals = loadJSON(GOALS_KEY, []);
@@ -1295,11 +1313,130 @@
     `;
   };
 
+  // ---------- App lock ----------
+  const lockView = () => `
+    <div class="lockScreen">
+      <div class="card lockCard">
+        <div class="lockIcon" aria-hidden="true">🔒</div>
+        <h1 class="h1">האפליקציה נעולה</h1>
+        <p class="p">יש להזין את הקוד האישי כדי להמשיך.</p>
+        <form id="unlock_form" class="stack" autocomplete="off">
+          <input
+            id="unlock_pin"
+            class="input lockPin"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            minlength="4"
+            maxlength="6"
+            placeholder="קוד בן 4–6 ספרות"
+            aria-label="קוד אישי"
+            autofocus
+          />
+          <div id="unlock_error" class="lockError" role="alert" aria-live="polite"></div>
+          <button class="btn btnPrimary" type="submit"><span>פתיחת האפליקציה</span><span>🔓</span></button>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const bindLockScreen = () => {
+    const form = $("#unlock_form");
+    const pinInput = $("#unlock_pin");
+    const error = $("#unlock_error");
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const pin = pinInput?.value || "";
+      if (!isValidPin(pin)) {
+        error.textContent = "יש להזין קוד בן 4–6 ספרות.";
+        return;
+      }
+      if (!(await verifyPin(pin))) {
+        error.textContent = "הקוד שגוי. אפשר לנסות שוב.";
+        pinInput.value = "";
+        pinInput.focus();
+        return;
+      }
+      appLocked = false;
+      render();
+      toast("האפליקציה נפתחה");
+    });
+  };
+
+  const bindPrivacyLock = () => {
+    const config = getLockConfig();
+    const current = $("#lock_current");
+    const next = $("#lock_new");
+    const confirmPin = $("#lock_confirm");
+    const status = $("#lock_status");
+
+    $("#lock_save")?.addEventListener("click", async () => {
+      const newPin = next?.value || "";
+      const confirmation = confirmPin?.value || "";
+      if (config && !(await verifyPin(current?.value || "", config))) {
+        status.textContent = "הקוד הנוכחי שגוי.";
+        return;
+      }
+      if (!isValidPin(newPin)) {
+        status.textContent = "הקוד החדש צריך להכיל 4–6 ספרות.";
+        return;
+      }
+      if (newPin !== confirmation) {
+        status.textContent = "הקודים החדשים אינם תואמים.";
+        return;
+      }
+      const salt = makeSalt();
+      saveJSON(APP_LOCK_KEY, { salt, hash: await hashPin(newPin, salt) });
+      appLocked = false;
+      toast(config ? "הקוד הוחלף" : "הנעילה הופעלה");
+      render();
+    });
+
+    $("#lock_remove")?.addEventListener("click", async () => {
+      if (!(await verifyPin(current?.value || "", config))) {
+        status.textContent = "הקוד הנוכחי שגוי.";
+        return;
+      }
+      localStorage.removeItem(APP_LOCK_KEY);
+      appLocked = false;
+      toast("הנעילה הוסרה");
+      render();
+    });
+
+    $("#lock_now")?.addEventListener("click", () => {
+      appLocked = true;
+      render();
+    });
+  };
+
   // ---------- Privacy view ----------
-  const privacyView = () => `
+  const privacyView = () => {
+    const lockEnabled = !!getLockConfig();
+    return `
     <div class="card">
       ${cardHeader("פרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
       <div class="stack">
+        <div class="item">
+          <div class="rowBetween">
+            <div style="font-weight:900;">נעילת האפליקציה</div>
+            <span class="tag tagStrong">${lockEnabled ? "פעילה" : "לא פעילה"}</span>
+          </div>
+          <p class="p" style="margin-top:8px;">קוד אישי בן 4–6 ספרות יידרש בפתיחת האפליקציה ובחזרה אליה לאחר מעבר לרקע.</p>
+          ${lockEnabled ? `
+            <input id="lock_current" class="input lockPin" type="password" inputmode="numeric" maxlength="6" placeholder="הקוד הנוכחי" autocomplete="off" />
+          ` : ""}
+          <input id="lock_new" class="input lockPin" type="password" inputmode="numeric" maxlength="6" placeholder="${lockEnabled ? "קוד חדש" : "בחירת קוד"}" autocomplete="new-password" />
+          <input id="lock_confirm" class="input lockPin" type="password" inputmode="numeric" maxlength="6" placeholder="הקלדת הקוד שוב" autocomplete="new-password" />
+          <div id="lock_status" class="lockError" role="alert" aria-live="polite"></div>
+          <div class="pillRow" style="margin-top:10px;">
+            <button class="btn btnSmall btnPrimary" id="lock_save"><span>${lockEnabled ? "החלפת קוד" : "הפעלת נעילה"}</span><span>🔒</span></button>
+            ${lockEnabled ? `
+              <button class="btn btnSmall" id="lock_now"><span>נעילה עכשיו</span><span>🔒</span></button>
+              <button class="btn btnSmall btnDanger" id="lock_remove"><span>הסרת נעילה</span><span>×</span></button>
+            ` : ""}
+          </div>
+          <div class="smallNote" style="margin-top:10px;">הקוד אינו נשלח לשום מקום. אם הוא נשכח, אין אפשרות לשחזר אותו מתוך האפליקציה.</div>
+        </div>
         <div class="item">
           <div style="font-weight:900; margin-bottom:6px;">איפה הנתונים נשמרים?</div>
           <div class="p">רק במכשיר שלך (Local Storage). אין שרת. אין חשבון. אין שליחה לענן.</div>
@@ -1315,6 +1452,7 @@
       </div>
     </div>
   `;
+  };
 
   // ---------- Toast ----------
   let toastTimer = null;
@@ -1359,6 +1497,18 @@
   const render = () => {
     if (!app) return;
 
+    if (appLocked && getLockConfig()) {
+      document.body.classList.add("appLocked");
+      const bottomNav = $(".bottomNav");
+      if (bottomNav) bottomNav.style.display = "none";
+      app.innerHTML = lockView();
+      bindLockScreen();
+      return;
+    }
+    document.body.classList.remove("appLocked");
+    const bottomNav = $(".bottomNav");
+    if (bottomNav) bottomNav.style.removeProperty("display");
+
     let html = "";
     if (ui.route === "home") html = homeView();
     if (ui.route === "reg") html = regView();
@@ -1384,6 +1534,7 @@
     if (ui.route === "thought") bindThought();
     if (ui.route === "dilemma") bindDilemma();
     if (ui.route === "history") bindHistory();
+    if (ui.route === "privacy") bindPrivacyLock();
     if (ui.route === "journal") bindExposures();
     if (ui.route === "goal") bindGoals();
     if (ui.route === "lifeWheel") bindLifeWheel();
@@ -1413,6 +1564,12 @@
     hideSplashSoon();
     registerSW();
   };
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden" && getLockConfig()) {
+      appLocked = true;
+    }
+  });
 
   document.addEventListener("DOMContentLoaded", boot);
 })();
