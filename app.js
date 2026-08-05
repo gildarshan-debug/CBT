@@ -283,7 +283,6 @@
         <h2 class="h1">${esc(title)}</h2>
         ${sub ? `<p class="p">${esc(sub)}</p>` : ""}
       </div>
-      <span class="badge"><span class="badgeDot"></span> צעד קטן</span>
     </div>
   `;
 
