@@ -504,3 +504,238 @@ input[type="range"]{ width:100%; }
 }
 .appLocked .bottomNav{ display:none; }
 .appLocked .app{ padding-bottom:24px; }
+
+
+/* ===== HOME WARM OPTIMISTIC THEME ===== */
+/*
+  Scoped exclusively to the home route. The home screen is identified by its
+  existing regulation launcher, so internal routes keep their current theme.
+*/
+:root{
+  --home-bg-start:#F9F1E2;
+  --home-bg-middle:#F6E5C8;
+  --home-bg-end:#FFF8EB;
+  --home-surface:#FFF9EF;
+  --home-surface-soft:#FDF4E4;
+  --home-header-bg:rgba(255,251,244,.96);
+  --home-nav-bg:rgba(255,250,241,.97);
+
+  --card-honey-start:#FFF2C9;
+  --card-honey-end:#F6D991;
+  --card-apricot-start:#FCE7D6;
+  --card-apricot-end:#F5C9AA;
+  --card-sand-start:#FFF0D2;
+  --card-sand-end:#EFD5A4;
+  --card-mint-start:#EDF5EF;
+  --card-mint-end:#DDEBE5;
+
+  --primary-start:#F9BC38;
+  --primary-end:#E79A16;
+  --primary-hover-start:#F5B42A;
+  --primary-hover-end:#D9890F;
+  --primary-active:#C9790C;
+
+  --home-teal:#168B8B;
+  --home-teal-dark:#0D7174;
+  --home-teal-soft:#DCEFEB;
+  --home-coral:#C96A3B;
+
+  --home-text-primary:#173042;
+  --home-text-secondary:#526570;
+  --home-text-muted:#718087;
+  --home-text-on-primary:#142B3A;
+
+  --home-border-warm:#E8C98D;
+  --home-border-apricot:#EDB88F;
+  --home-border-soft:rgba(183,137,68,.24);
+  --home-border-teal:rgba(22,139,139,.30);
+
+  --home-shadow-container:
+    0 14px 36px rgba(116,79,27,.10),
+    0 3px 10px rgba(116,79,27,.07);
+  --home-shadow-card:
+    0 5px 14px rgba(143,94,29,.10),
+    0 1px 3px rgba(143,94,29,.08);
+  --home-shadow-card-hover:
+    0 9px 22px rgba(143,94,29,.16),
+    0 2px 5px rgba(143,94,29,.10);
+  --home-shadow-primary:0 8px 20px rgba(218,137,16,.24);
+}
+
+/* Page canvas */
+body:has(.btn[data-open="reg"]){
+  color:var(--home-text-primary);
+  background:
+    radial-gradient(circle at 10% 55%, rgba(255,214,143,.32) 0%, transparent 34%),
+    radial-gradient(circle at 92% 28%, rgba(193,231,219,.25) 0%, transparent 30%),
+    linear-gradient(135deg,
+      var(--home-bg-start) 0%,
+      var(--home-bg-middle) 48%,
+      var(--home-bg-end) 100%);
+}
+
+/* Header */
+body:has(.btn[data-open="reg"]) .topbar{
+  background:var(--home-header-bg);
+  border-bottom:1px solid var(--home-border-soft);
+  box-shadow:0 2px 12px rgba(102,70,25,.05);
+}
+body:has(.btn[data-open="reg"]) .brandTitle{
+  color:var(--home-text-primary);
+}
+body:has(.btn[data-open="reg"]) .brandTag{
+  color:var(--home-text-secondary);
+}
+body:has(.btn[data-open="reg"]) .brandLogo{
+  background:var(--home-surface);
+  border-color:var(--home-border-soft);
+  box-shadow:0 5px 14px rgba(116,79,27,.10);
+}
+
+/* Home surfaces */
+body:has(.btn[data-open="reg"]) .app > .card{
+  background:rgba(255,249,239,.94);
+  border:1px solid var(--home-border-soft);
+  box-shadow:var(--home-shadow-container);
+  color:var(--home-text-primary);
+}
+body:has(.btn[data-open="reg"]) .app > .card .h1{
+  color:var(--home-teal);
+}
+body:has(.btn[data-open="reg"]) .app > .card .p{
+  color:var(--home-text-secondary);
+}
+body:has(.btn[data-open="reg"]) .app > .card .badge{
+  color:var(--home-text-primary);
+  background:rgba(255,242,211,.92);
+  border-color:var(--home-border-soft);
+  box-shadow:0 2px 6px rgba(116,79,27,.06);
+}
+body:has(.btn[data-open="reg"]) .app > .card .badgeDot{
+  background:var(--home-teal);
+  box-shadow:0 0 0 4px rgba(22,139,139,.12);
+}
+body:has(.btn[data-open="reg"]) .app > .card .hr{
+  background:var(--home-border-soft);
+}
+
+/* Shared home menu cards */
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn{
+  color:var(--home-text-primary);
+  border-color:var(--home-border-warm);
+  box-shadow:var(--home-shadow-card);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    border-color 180ms ease;
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn .p{
+  color:var(--home-text-secondary);
+}
+
+/* One strong primary action: regulation */
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(1){
+  color:var(--home-text-on-primary);
+  background:linear-gradient(135deg,var(--primary-start),var(--primary-end));
+  border-color:#D88C10;
+  box-shadow:var(--home-shadow-primary);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(1) .p{
+  color:var(--home-text-on-primary);
+}
+
+/* Warm coordinated families for remaining menu cards */
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(2){
+  background:linear-gradient(135deg,var(--card-honey-start),var(--card-honey-end));
+  border-color:var(--home-border-warm);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(3){
+  background:linear-gradient(135deg,var(--card-sand-start),var(--card-sand-end));
+  border-color:var(--home-border-warm);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(4){
+  background:linear-gradient(135deg,var(--card-apricot-start),var(--card-apricot-end));
+  border-color:var(--home-border-apricot);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(5){
+  background:linear-gradient(135deg,#FFF0D2,#EBCB91);
+  border-color:var(--home-border-warm);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(6){
+  background:linear-gradient(135deg,#FDEBDD,#F3C7A8);
+  border-color:var(--home-border-apricot);
+}
+
+/* History count panel */
+body:has(.btn[data-open="reg"]) .app > .card:first-child .kpiItem{
+  color:var(--home-text-primary);
+  background:linear-gradient(135deg,var(--card-mint-start),var(--card-mint-end));
+  border-color:var(--home-border-teal);
+  box-shadow:var(--home-shadow-card);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .kpiTitle{
+  color:var(--home-text-secondary);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .kpiValue{
+  color:var(--home-teal-dark);
+}
+
+/* Interaction states */
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--home-shadow-card-hover);
+  filter:saturate(1.04);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:nth-child(1):hover{
+  background:linear-gradient(135deg,var(--primary-hover-start),var(--primary-hover-end));
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:active{
+  transform:translateY(0) scale(.99);
+}
+body:has(.btn[data-open="reg"]) .app > .card:first-child .grid2 > .btn:focus-visible,
+body:has(.btn[data-open="reg"]) .navBtn:focus-visible{
+  outline:3px solid rgba(22,139,139,.42);
+  outline-offset:3px;
+}
+
+/* Bottom navigation */
+body:has(.btn[data-open="reg"]) .bottomNav{
+  background:var(--home-nav-bg);
+  border-top:1px solid var(--home-border-soft);
+  box-shadow:0 -8px 24px rgba(104,72,28,.08);
+}
+body:has(.btn[data-open="reg"]) .navBtn{
+  color:var(--home-text-primary);
+  background:rgba(255,251,244,.90);
+  border-color:var(--home-border-soft);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+body:has(.btn[data-open="reg"]) .navBtn .navLabel{
+  color:var(--home-text-secondary);
+}
+body:has(.btn[data-open="reg"]) .navBtn:hover{
+  background:#FFF1D4;
+  border-color:var(--home-border-warm);
+}
+body:has(.btn[data-open="reg"]) .navBtn.active{
+  color:var(--home-text-on-primary);
+  background:linear-gradient(135deg,var(--primary-start),var(--primary-end));
+  border-color:#D88C10;
+  box-shadow:var(--home-shadow-primary);
+}
+body:has(.btn[data-open="reg"]) .navBtn.active .navLabel{
+  color:var(--home-text-on-primary);
+}
+
+/* Avoid motion for users who request it */
+@media (prefers-reduced-motion:reduce){
+  body:has(.btn[data-open="reg"]) .btn,
+  body:has(.btn[data-open="reg"]) .navBtn{
+    transition:none;
+  }
+}
