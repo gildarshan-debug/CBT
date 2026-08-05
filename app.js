@@ -313,52 +313,64 @@
     <div class="card">
       ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
       <div class="grid2">
-        <button class="btn btnPrimary" data-open="reg">
-          <span>
-            <div style="font-weight:900;">לחץ/הצפה</div>
-            <div class="p">תרגיל ויסות אחד בכל פעם</div>
+        <button class="btn btnPrimary homeToolBtn" data-open="reg">
+          <span class="homeToolText">
+            <span class="homeToolTitle">לחץ/הצפה</span>
+            <span class="p">תרגיל ויסות אחד בכל פעם</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="M12 12l3-3"/><path d="M6.5 18h11"/></svg>
+          </span>
         </button>
 
-        <button class="btn" data-open="thought">
-          <span>
-            <div style="font-weight:900;">מחשבה שלא עוזבת</div>
-            <div class="p">בדיקת מציאות + חלופות</div>
+        <button class="btn homeToolBtn" data-open="thought">
+          <span class="homeToolText">
+            <span class="homeToolTitle">מחשבה שלא עוזבת</span>
+            <span class="p">בדיקת מציאות + חלופות</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M9.5 4.5A3 3 0 0 0 6 8v.3A3.5 3.5 0 0 0 5 15a3 3 0 0 0 4.5 2.6"/><path d="M14.5 4.5A3 3 0 0 1 18 8v.3a3.5 3.5 0 0 1 1 6.7 3 3 0 0 1-4.5 2.6"/><path d="M12 4v16M8.5 10H12m3.5 4H12"/><path d="M7 21a5 5 0 0 0 8.7-2"/><path d="M7 21v-4h4"/></svg>
+          </span>
         </button>
 
-        <button class="btn" data-open="dilemma">
-          <span>
-            <div style="font-weight:900;">דילמה</div>
-            <div class="p">כיוון + צעד קטן</div>
+        <button class="btn homeToolBtn" data-open="dilemma">
+          <span class="homeToolText">
+            <span class="homeToolTitle">דילמה</span>
+            <span class="p">כיוון + צעד קטן</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M6 3v5a4 4 0 0 0 4 4h8"/><path d="M14 8l4 4-4 4"/><path d="M6 21v-5a4 4 0 0 1 4-4"/></svg>
+          </span>
         </button>
 
-        <button class="btn" data-open="journal">
-          <span>
-            <div style="font-weight:900;">חשיפות</div>
-            <div class="p">יומן אישי פתוח</div>
+        <button class="btn homeToolBtn" data-open="journal">
+          <span class="homeToolText">
+            <span class="homeToolTitle">חשיפות</span>
+            <span class="p">יומן אישי פתוח</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 17h4v-4h4V9h4V5h3"/></svg>
+          </span>
         </button>
 
-        <button class="btn" data-open="goal">
-          <span>
-            <div style="font-weight:900;">מטרות</div>
-            <div class="p">כיוון, סיבה וצעד</div>
+        <button class="btn homeToolBtn" data-open="goal">
+          <span class="homeToolText">
+            <span class="homeToolTitle">מטרות</span>
+            <span class="p">כיוון, סיבה וצעד</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12l7-7M16 5h3v3"/></svg>
+          </span>
         </button>
 
-        <button class="btn" data-open="lifeWheel">
-          <span>
-            <div style="font-weight:900;">מעגל החיים</div>
-            <div class="p">דירוג הווה ועתיד</div>
+        <button class="btn homeToolBtn" data-open="lifeWheel">
+          <span class="homeToolText">
+            <span class="homeToolTitle">מעגל החיים</span>
+            <span class="p">דירוג הווה ועתיד</span>
           </span>
-          <span>›</span>
+          <span class="homeToolIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9M12 12l-6.4 6.4"/></svg>
+          </span>
         </button>
       </div>
 

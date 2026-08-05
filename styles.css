@@ -225,6 +225,50 @@ a{color:inherit}
   padding: 10px 12px;
 }
 
+.homeToolBtn{
+  direction: rtl;
+  text-align: right;
+}
+
+.homeToolText{
+  min-width:0;
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:right;
+}
+
+.homeToolTitle{
+  display:block;
+  width:100%;
+  font-weight:900;
+  line-height:1.35;
+}
+
+.homeToolIcon{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.22);
+  color:currentColor;
+}
+
+.homeToolIcon svg{
+  width:24px;
+  height:24px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
 .iconPill{
   width:36px;height:36px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
