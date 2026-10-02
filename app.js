@@ -240,6 +240,15 @@
       topic: "עבודה",
       text: "",
       output: null
+    },
+    core: {
+      step: 1,
+      first: "",
+      fact: "",
+      interpretation: "",
+      alternative: "",
+      second: "",
+      action: ""
     }
   };
 
@@ -293,203 +302,180 @@
   `;
 
   const homeView = () => `
-    <div class="card">
-      ${cardHeader("מה מתאים לך עכשיו?", "בחר את הכלי שמתאים למה שאתה רוצה לעבוד עליו.")}
-      <div class="grid2">
-        <button class="btn btnPrimary homeToolBtn" data-open="reg">
-          <span class="homeToolText">
-            <span class="homeToolTitle">לחץ/הצפה</span>
-            <span class="p">תרגיל קצר להפחתת עוררות</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="M12 12l3-3"/><path d="M6.5 18h11"/></svg>
-          </span>
-        </button>
+    <section class="coreHero">
+      <div class="coreEyebrow">במחשבה שנייה</div>
+      <h1 class="coreHeroTitle">מה עובר לך בראש עכשיו?</h1>
+      <p class="coreHeroSub">כתוב את המחשבה כמו שהיא עולה. לא צריך לסדר או להסביר.</p>
+      <textarea id="home_core_text" class="coreHomeInput" placeholder="למשל: הוא לא ענה לי. כנראה שהוא כועס עליי.">${esc(ui.core.first)}</textarea>
+      <button class="btn btnPrimary coreStartBtn" id="home_core_start">
+        <span>בדיקת המחשבה</span><span>←</span>
+      </button>
+    </section>
 
-        <button class="btn homeToolBtn" data-open="thought">
-          <span class="homeToolText">
-            <span class="homeToolTitle">מחשבה שלא עוזבת</span>
-            <span class="p">בדיקה של המחשבה מול העובדות</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M9.5 4.5A3 3 0 0 0 6 8v.3A3.5 3.5 0 0 0 5 15a3 3 0 0 0 4.5 2.6"/><path d="M14.5 4.5A3 3 0 0 1 18 8v.3a3.5 3.5 0 0 1 1 6.7 3 3 0 0 1-4.5 2.6"/><path d="M12 4v16M8.5 10H12m3.5 4H12"/><path d="M7 21a5 5 0 0 0 8.7-2"/><path d="M7 21v-4h4"/></svg>
-          </span>
-        </button>
-
-        <button class="btn homeToolBtn" data-open="dilemma">
-          <span class="homeToolText">
-            <span class="homeToolTitle">דילמה</span>
-            <span class="p">בחינת האפשרויות לפני החלטה</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M6 3v5a4 4 0 0 0 4 4h8"/><path d="M14 8l4 4-4 4"/><path d="M6 21v-5a4 4 0 0 1 4-4"/></svg>
-          </span>
-        </button>
-
-        <button class="btn homeToolBtn" data-open="journal">
-          <span class="homeToolText">
-            <span class="homeToolTitle">חשיפות</span>
-            <span class="p">תיעוד תרגול וחשיפות</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 17h4v-4h4V9h4V5h3"/></svg>
-          </span>
-        </button>
-
-        <button class="btn homeToolBtn" data-open="goal">
-          <span class="homeToolText">
-            <span class="homeToolTitle">מטרות</span>
-            <span class="p">הגדרת מטרה ומעקב</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12l7-7M16 5h3v3"/></svg>
-          </span>
-        </button>
-
-        <button class="btn homeToolBtn" data-open="lifeWheel">
-          <span class="homeToolText">
-            <span class="homeToolTitle">מעגל החיים</span>
-            <span class="p">מבט על תחומי החיים</span>
-          </span>
-          <span class="homeToolIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9M12 12l-6.4 6.4"/></svg>
-          </span>
-        </button>
+    <div class="card secondaryTools">
+      <div class="secondaryToolsTitle">צריך משהו אחר עכשיו?</div>
+      <div class="quickTools">
+        <button class="quickTool" data-open="reg"><span>לחץ / הרגעה</span><small>תרגיל קצר</small></button>
+        <button class="quickTool" data-open="dilemma"><span>דילמה</span><small>בחינת אפשרויות</small></button>
+        <button class="quickTool" data-open="journal"><span>חשיפות</span><small>תיעוד תרגול</small></button>
+        <button class="quickTool" data-open="goal"><span>מטרות</span><small>הגדרה ומעקב</small></button>
       </div>
-
-      <div class="hr"></div>
-      <div class="kpi">
-        <div class="kpiItem">
-          <div class="kpiTitle">כמות אירועים בהיסטוריה</div>
-          <div class="kpiValue">${state.history.length}</div>
+      <details class="allTools">
+        <summary>כל הכלים</summary>
+        <div class="grid2" style="margin-top:10px;">
+          <button class="btn btnSmall" data-open="thought"><span>מחשבה שלא עוזבת — הכלי הקודם</span><span>›</span></button>
+          <button class="btn btnSmall" data-open="lifeWheel"><span>מעגל החיים</span><span>›</span></button>
         </div>
-      </div>
+      </details>
     </div>
-
   `;
+
+  const resetCore = () => {
+    ui.core = { step:1, first:"", fact:"", interpretation:"", alternative:"", second:"", action:"" };
+  };
+
+  const coreProgress = (active) => {
+    const labels = ["מחשבה ראשונה","עצירה","בדיקה","מחשבה שנייה","בחירה"];
+    return `<div class="coreProgress">${labels.map((x,i)=>`<span class="${i+1===active?'active':''} ${i+1<active?'done':''}">${esc(x)}</span>`).join("")}</div>`;
+  };
+
+  const coreView = () => {
+    const c = ui.core;
+    let body = "";
+    if (c.step === 1) body = `
+      <div class="coreStep">
+        <div class="coreStepNo">01</div>
+        <h2>המחשבה הראשונה</h2>
+        <p>כתוב אותה כפי שהיא עולה עכשיו.</p>
+        <textarea id="core_first" placeholder="מה עובר לך בראש?">${esc(c.first)}</textarea>
+        <button class="btn btnPrimary" id="core_next"><span>המשך</span><span>←</span></button>
+      </div>`;
+    if (c.step === 2) body = `
+      <div class="coreStep">
+        <div class="coreStepNo">02</div>
+        <h2>מה קרה בפועל?</h2>
+        <div class="coreQuote">${esc(c.first)}</div>
+        <p>כתוב רק את מה שאתה יודע שקרה. נסה להיצמד למה שאפשר היה לראות, לשמוע או לבדוק.</p>
+        <textarea id="core_fact" placeholder="מה ידוע לי בוודאות?">${esc(c.fact)}</textarea>
+        <button class="btn btnPrimary" id="core_next"><span>המשך</span><span>←</span></button>
+      </div>`;
+    if (c.step === 3) body = `
+      <div class="coreStep">
+        <div class="coreStepNo">03</div>
+        <h2>מה אני מוסיף לסיפור?</h2>
+        <p>איזו מסקנה, השערה או משמעות אתה נותן למה שקרה?</p>
+        <textarea id="core_interpretation" placeholder="מה אני מניח או מפרש?">${esc(c.interpretation)}</textarea>
+        <div class="coreDivider"></div>
+        <label class="coreLabel" for="core_alternative">יש עוד הסבר אפשרי?</label>
+        <p>לא צריך למצוא הסבר חיובי. רק אפשרות נוספת שמתאימה לעובדות.</p>
+        <textarea id="core_alternative" placeholder="אפשרות נוספת...">${esc(c.alternative)}</textarea>
+        <button class="btn btnPrimary" id="core_next"><span>המשך</span><span>←</span></button>
+      </div>`;
+    if (c.step === 4) body = `
+      <div class="coreStep coreSecondStep">
+        <div class="coreStepNo">04</div>
+        <h2>במחשבה שנייה</h2>
+        <div class="coreCompare">
+          <div><small>המחשבה הראשונה</small><p>${esc(c.first)}</p></div>
+          <div><small>מה ידוע</small><p>${esc(c.fact)}</p></div>
+          ${c.alternative ? `<div><small>אפשרות נוספת</small><p>${esc(c.alternative)}</p></div>` : ""}
+        </div>
+        <label class="coreLabel" for="core_second">אחרי הבדיקה, איך היית מנסח את המחשבה עכשיו?</label>
+        <textarea id="core_second" placeholder="במילים שלך...">${esc(c.second)}</textarea>
+        <button class="btn btnPrimary" id="core_next"><span>המשך</span><span>←</span></button>
+      </div>`;
+    if (c.step === 5) body = `
+      <div class="coreStep">
+        <div class="coreStepNo">05</div>
+        <h2>מה נכון לעשות עכשיו?</h2>
+        <div class="coreCompare final">
+          <div><small>מחשבה ראשונה</small><p>${esc(c.first)}</p></div>
+          <div class="second"><small>במחשבה שנייה</small><p>${esc(c.second)}</p></div>
+        </div>
+        <label class="coreLabel" for="core_action">מה הפעולה הבאה שלך?</label>
+        <input id="core_action" class="input" placeholder="אפשר גם לבחור לא לעשות דבר כרגע" value="${esc(c.action)}" />
+        <button class="btn btnPrimary" id="core_save"><span>שמירה וסיום</span><span>✓</span></button>
+        <button class="btn btnInline" id="core_no_save"><span>סיום בלי לשמור</span></button>
+      </div>`;
+    return `
+      <div class="card coreFlow">
+        ${coreProgress(c.step)}
+        ${body}
+        ${c.step > 1 ? '<button class="coreBack" id="core_back">→ חזרה</button>' : ''}
+      </div>`;
+  };
+
+  const bindCore = () => {
+    const c=ui.core;
+    const map={1:"core_first",2:"core_fact",4:"core_second"};
+    const id=map[c.step];
+    if(id) document.getElementById(id)?.addEventListener("input",e=>{
+      if(c.step===1)c.first=e.target.value;
+      if(c.step===2)c.fact=e.target.value;
+      if(c.step===4)c.second=e.target.value;
+    });
+    document.getElementById("core_interpretation")?.addEventListener("input",e=>c.interpretation=e.target.value);
+    document.getElementById("core_alternative")?.addEventListener("input",e=>c.alternative=e.target.value);
+    document.getElementById("core_action")?.addEventListener("input",e=>c.action=e.target.value);
+
+    document.getElementById("core_next")?.addEventListener("click",()=>{
+      if(c.step===1 && !c.first.trim()){toast("כתוב את המחשבה שעולה עכשיו.");return;}
+      if(c.step===2 && !c.fact.trim()){toast("כתוב מה ידוע לך שקרה.");return;}
+      if(c.step===3 && !c.interpretation.trim()){toast("כתוב מה אתה מפרש או מניח.");return;}
+      if(c.step===4 && !c.second.trim()){toast("נסח את המחשבה מחדש במילים שלך.");return;}
+      c.step=Math.min(5,c.step+1); render(); window.scrollTo({top:0,behavior:"smooth"});
+    });
+    document.getElementById("core_back")?.addEventListener("click",()=>{c.step=Math.max(1,c.step-1);render();});
+    document.getElementById("core_save")?.addEventListener("click",()=>{
+      addHistory({
+        ts:nowISO(), kind:"במחשבה שנייה", intensity:null, trigger:"",
+        title:c.first.slice(0,64),
+        note:`מחשבה ראשונה: ${c.first}\nמה קרה בפועל: ${c.fact}\nפרשנות: ${c.interpretation}\nאפשרות נוספת: ${c.alternative}\nמחשבה שנייה: ${c.second}\nפעולה: ${c.action || "לא הוגדרה"}`,
+        secondThought:{firstThought:c.first,fact:c.fact,interpretation:c.interpretation,alternative:c.alternative,secondThought:c.second,choice:c.action}
+      });
+      toast("נשמר");
+      resetCore(); setRoute("home");
+    });
+    document.getElementById("core_no_save")?.addEventListener("click",()=>{resetCore();setRoute("home");});
+  };
 
 // ---------- Regulation ----------
   const regView = () => {
+    if (!ui.reg.current) ui.reg.current = avoidPick("reg", REG_EXERCISES);
     const ex = ui.reg.current;
     return `
-      <div class="card">
-        ${cardHeader("לחץ / הצפה", "בחר תרגיל קצר והתמקד רק בו.")}
-        <div class="stack">
-          ${sliderBlock("עוצמה עכשיו (0–10)", ui.reg.intensity === null ? "0 – לא בחרתי" : `${ui.reg.intensity}`, "reg_int", "סמן את העוצמה שמתאימה כרגע.")}
-          ${selectBlock("טריגר", "reg_trigger", TRIGGERS, ui.reg.trigger)}
-          <div class="sliderWrap">
-            <div class="sliderTop">
-              <div class="sliderLabel">כמות אירועים לשמירה</div>
-              <div class="sliderVal" id="reg_count_val">${ui.reg.count}</div>
-            </div>
-            <input type="range" min="1" max="10" step="1" value="${ui.reg.count}" id="reg_count" />
-            <div class="smallNote" style="margin-top:6px;">אם עשית את התרגיל כמה פעמים—אפשר לשמור יותר מאירוע אחד.</div>
-          </div>
-
-          <button class="btn btnPrimary" id="reg_next">
-            <span class="row" style="gap:10px;"><span>
-                <div style="font-weight:900;">בחר תרגיל</div>
-                <div class="p">יוצג תרגיל אחד</div>
-              </span>
-            </span>
-            <span>›</span>
-          </button>
-
-          ${ex ? `
-            <div class="card" style="background: rgba(255,255,255,.02); border-radius: 22px;">
-              <div class="rowBetween" style="margin-bottom:8px;">
-                <div style="font-weight:900; font-size:16px;">${esc(ex.title)}</div>
-                <span class="tag tagStrong">ויסות</span>
-              </div>
-              <p class="p">${esc(ex.intro)}</p>
-              <div class="hr"></div>
-              <div style="font-weight:900; line-height:1.55;">${esc(ex.how)}</div>
-              <div class="hr"></div>
-              <div class="pillRow">
-                <span class="tag">תרגיל קצר</span>
-              </div>
-            </div>
-          ` : `
-            <div class="smallNote">אפשר להתחיל בקרקוע 5–4–3–2–1 או בתרגיל מים קרים.</div>
-          `}
-
-          <button class="btn btnInline" id="go_home"><span>חזרה לבית</span><span>⌂</span></button>
+      <div class="card regulationNow">
+        ${cardHeader("לחץ / הצפה", "התחל בתרגיל. את המדידה והתיעוד אפשר לעשות אחר כך.")}
+        <div class="regExercise">
+          <span class="tag tagStrong">תרגיל קצר</span>
+          <h2>${esc(ex.title)}</h2>
+          <p class="p">${esc(ex.intro)}</p>
+          <div class="regInstruction">${esc(ex.how)}</div>
         </div>
-      </div>
-
-      <div class="card">
-        ${cardHeader("שמירת התרגול", "אפשר לשמור את התרגול כדי לעקוב אחר דפוסים לאורך זמן.")}
-        <button class="btn btnPrimary" id="reg_save">
-          <span class="row" style="gap:10px;"><span>
-              <div style="font-weight:900;">שמור וסיים</div>
-              <div class="p">יישמר לפי שעה + יום + עוצמה + טריגר</div>
-            </span>
-          </span>
-          <span>✓</span>
-        </button>
-        <div class="smallNote" style="margin-top:8px;">המידע נשמר רק במכשיר שלך (Local Storage).</div>
-      </div>
-    `;
+        <button class="btn" id="reg_other"><span>תרגיל אחר</span><span>↻</span></button>
+        <div class="hr"></div>
+        <div class="regAfter">
+          <h3>אחרי התרגיל</h3>
+          ${sliderBlock("כמה לחץ יש עכשיו? (0–10)", ui.reg.intensity === null ? "לא נבחר" : `${ui.reg.intensity}`, "reg_int", "")}
+          ${selectBlock("מה הפעיל את הלחץ? (לא חובה)", "reg_trigger", TRIGGERS, ui.reg.trigger)}
+          <button class="btn btnPrimary" id="reg_save"><span>שמירת התרגול</span><span>✓</span></button>
+        </div>
+        <button class="btn btnInline" id="go_home" style="margin-top:10px;"><span>חזרה לבית</span><span>⌂</span></button>
+      </div>`;
   };
 
   const bindReg = () => {
-    const r = $("#reg_int_range");
-    const v = $("#reg_int");
-    const triggerEl = $("#reg_trigger");
-    const count = $("#reg_count");
-    const countVal = $("#reg_count_val");
-
-    // intensity must be moved
-    r.addEventListener("input", () => {
-      const n = Number(r.value);
-      ui.reg.intensity = n; // now chosen
-      v.textContent = `${n}`;
+    const r=$("#reg_int_range"), v=$("#reg_int"), triggerEl=$("#reg_trigger");
+    r?.addEventListener("input",()=>{ui.reg.intensity=Number(r.value);v.textContent=`${ui.reg.intensity}`;});
+    triggerEl?.addEventListener("change",()=>ui.reg.trigger=triggerEl.value);
+    $("#reg_other")?.addEventListener("click",()=>{ui.reg.current=avoidPick("reg",REG_EXERCISES);render();});
+    $("#reg_save")?.addEventListener("click",()=>{
+      if(ui.reg.intensity===null){toast("סמן כמה לחץ יש עכשיו.");return;}
+      addHistory({ts:nowISO(),kind:"לחץ/הצפה",intensity:ui.reg.intensity,trigger:ui.reg.trigger,title:ui.reg.current.title,note:ui.reg.current.how});
+      toast("נשמר");
+      ui.reg.current=null; ui.reg.intensity=null; render();
     });
-
-    triggerEl.addEventListener("change", () => ui.reg.trigger = triggerEl.value);
-
-    count.addEventListener("input", () => {
-      ui.reg.count = Number(count.value);
-      countVal.textContent = `${ui.reg.count}`;
-    });
-
-    $("#reg_next").addEventListener("click", () => {
-      ui.reg.current = avoidPick("reg", REG_EXERCISES);
-      render();
-      // focus exercise title area
-      setTimeout(() => window.scrollTo({ top: 0, behavior:"smooth" }), 80);
-    });
-
-    $("#reg_save").addEventListener("click", () => {
-      if (ui.reg.intensity === null) {
-        toast("רק רגע—תזיז/י את הסליידר כדי לבחור עוצמה.");
-        return;
-      }
-      if (!ui.reg.current) {
-        toast("בחר/י קודם תרגיל אחד.");
-        return;
-      }
-      const entries = [];
-      for (let i=0;i<ui.reg.count;i++){
-        entries.push({
-          ts: nowISO(),
-          kind: "לחץ/הצפה",
-          intensity: ui.reg.intensity,
-          trigger: ui.reg.trigger,
-          title: ui.reg.current.title,
-          note: ui.reg.current.how
-        });
-      }
-      entries.forEach(addHistory);
-      toast("נשמר ✅");
-      // reset small parts (keep trigger)
-      ui.reg.current = null;
-      ui.reg.count = 1;
-      ui.reg.intensity = null;
-      render();
-    });
-
-    $("#go_home").addEventListener("click", () => setRoute("home"));
+    $("#go_home")?.addEventListener("click",()=>setRoute("home"));
   };
 
   // ---------- Thought ----------
@@ -1499,6 +1485,7 @@
     let html = "";
     if (ui.route === "home") html = homeView();
     if (ui.route === "reg") html = regView();
+    if (ui.route === "core") html = coreView();
     if (ui.route === "thought") html = thoughtView();
     if (ui.route === "dilemma") html = dilemmaView();
     if (ui.route === "history") html = historyView();
@@ -1511,13 +1498,22 @@
     app.innerHTML = html;
 
     // Bind home buttons
-    $$("[data-open]").forEach(b => b.addEventListener("click", () => {
+    $("[data-open]").forEach(b => b.addEventListener("click", () => {
       const r = b.getAttribute("data-open");
       if (r) setRoute(r);
     }));
+    $("#home_core_text")?.addEventListener("input", (e) => ui.core.first = e.target.value);
+    $("#home_core_start")?.addEventListener("click", () => {
+      const t = (ui.core.first || "").trim();
+      if (!t) { toast("כתוב את המחשבה שעולה עכשיו."); return; }
+      ui.core.first = t;
+      ui.core.step = 2;
+      setRoute("core");
+    });
 
     // Bind route-specific
     if (ui.route === "reg") bindReg();
+    if (ui.route === "core") bindCore();
     if (ui.route === "thought") bindThought();
     if (ui.route === "dilemma") bindDilemma();
     if (ui.route === "history") bindHistory();
