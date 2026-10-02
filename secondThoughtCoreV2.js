@@ -72,10 +72,10 @@
       if (stack) stack.insertAdjacentHTML('afterbegin', journeyMarkup(document.querySelector('button[data-alt]') ? 3 : 1));
     }
 
-    text.placeholder = 'המחשבה הראשונה שלי… (משפט אחד מספיק)';
+    text.placeholder = 'כתוב את המחשבה כפי שהיא עולה עכשיו…';
     const generate = document.getElementById('th_generate');
     const mainLabel = generate?.querySelector('div[style*="font-weight:900"]');
-    if (mainLabel) mainLabel.textContent = 'עוצרים ובודקים את המחשבה';
+    if (mainLabel) mainLabel.textContent = 'בדיקת המחשבה';
 
     if (document.querySelector('button[data-alt]')) setJourneyStep(3);
   };
@@ -106,16 +106,16 @@
       <div id="${PANEL_ID}" class="stFinishV2"
         data-first="${esc(firstThought)}" data-before="${before}" data-trigger="${esc(trigger)}" data-topic="${esc(topic)}" data-reality="${esc(reality)}">
         <div style="font-weight:900;font-size:17px;margin-bottom:6px;">ועכשיו, במחשבה שנייה…</div>
-        <div class="p">אפשר לדייק את הניסוח שבחרת כך שירגיש אמין ושימושי עבורך.</div>
+        <div class="p">אחרי שבדקת את המחשבה, נסח אותה מחדש במילים שלך.</div>
         <textarea id="st_second_v2" style="margin-top:10px;">${esc(chosenAlt)}</textarea>
-        <div style="font-weight:900;margin-top:14px;">כמה זה מפריע לי עכשיו? <span id="st_after_val_v2">${before}</span>/10</div>
+        <div style="font-weight:900;margin-top:14px;">כמה המחשבה מפריעה לי עכשיו? <span id="st_after_val_v2">${before}</span>/10</div>
         <input id="st_after_v2" type="range" min="0" max="10" step="1" value="${before}" />
-        <div style="font-weight:900;margin-top:14px;">מה אני בוחר/ת לעשות עכשיו?</div>
+        <div style="font-weight:900;margin-top:14px;">מה הפעולה הבאה שלי?</div>
         <div class="stChoiceGridV2">
-          ${['להמשיך הלאה', 'לעשות צעד קטן', 'לתת לעצמי זמן ולא להחליט עכשיו', 'לחזור לזה מאוחר יותר'].map((c) => `<button type="button" class="btn btnSmall stChoiceV2" data-choice="${esc(c)}"><span>${esc(c)}</span><span>✓</span></button>`).join('')}
+          ${['להמשיך הלאה', 'לעשות פעולה אחת', 'לא להחליט כרגע', 'לחזור לזה מאוחר יותר'].map((c) => `<button type="button" class="btn btnSmall stChoiceV2" data-choice="${esc(c)}"><span>${esc(c)}</span><span>✓</span></button>`).join('')}
         </div>
-        <input id="st_custom_v2" class="input" style="margin-top:10px;" placeholder="או לכתוב בחירה אחרת…" />
-        <button type="button" class="btn btnPrimary" id="st_save_v2" style="margin-top:12px;"><span>לשמור את המחשבה השנייה והבחירה</span><span>✓</span></button>
+        <input id="st_custom_v2" class="input" style="margin-top:10px;" placeholder="או לכתוב פעולה אחרת…" />
+        <button type="button" class="btn btnPrimary" id="st_save_v2" style="margin-top:12px;"><span>שמירה</span><span>✓</span></button>
       </div>`);
 
     setJourneyStep(4);
@@ -165,12 +165,12 @@
     setJourneyStep(5);
     panel.innerHTML = `
       <div class="stSummaryV2">
-        <div style="font-weight:900;font-size:18px;">זה ההבדל שעשית עכשיו</div>
+        <div style="font-weight:900;font-size:18px;">סיכום</div>
         <div style="margin-top:10px;"><b>המחשבה הראשונה:</b> ${esc(firstThought)}</div>
         <div style="margin-top:8px;"><b>במחשבה שנייה:</b> ${esc(secondThought)}</div>
-        <div style="margin-top:8px;"><b>הבחירה שלי:</b> ${esc(choice)}</div>
-        <div style="margin-top:8px;"><b>עוצמת ההפרעה:</b> ${before} → ${after}</div>
-        <button type="button" class="btn btnPrimary" id="st_finish_home_v2" style="margin-top:14px;"><span>סיום וחזרה לבית</span><span>⌂</span></button>
+        <div style="margin-top:8px;"><b>הפעולה שבחרתי:</b> ${esc(choice)}</div>
+        <div style="margin-top:8px;"><b>עוצמת המחשבה:</b> ${before} → ${after}</div>
+        <button type="button" class="btn btnPrimary" id="st_finish_home_v2" style="margin-top:14px;"><span>חזרה לבית</span><span>⌂</span></button>
       </div>`;
   };
 

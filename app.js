@@ -52,40 +52,30 @@
   // ---------- Content ----------
   // Regulation (Pressure/Overwhelm)
   const REG_EXERCISES = [
-    { id:"breath46", title:"נשימה 4–6", intro:"אנחנו מכוונים את מערכת העצבים בעדינות. גם אם זה לא מרגיע מיד—זה מתחיל להזיז את הגוף לכיוון בטוח.", how:"שאיפה 4 שניות, נשיפה 6 שניות. חזור 8 פעמים בקצב רגוע." },
-    { id:"box4444", title:"נשימת קופסה 4–4–4–4", intro:"זה תרגיל שעוזר לייצב קצב ולהחזיר תחושת שליטה. תן לעצמך להיות “בסדר” גם אם זה לא מושלם.", how:"שאיפה 4, החזקה 4, נשיפה 4, החזקה 4. חזור 4–6 סבבים." },
-    { id:"doubleExhale", title:"נשיפה כפולה", intro:"נשיפה ארוכה משדרת למוח: “אין סכנה כרגע”. נעשה את זה קצר ופשוט.", how:"שאיפה רגילה, שתי נשיפות קצרות ואז נשיפה ארוכה. חזור 6 פעמים." },
-    { id:"noseOnly", title:"נשימה דרך האף", intro:"המטרה היא להאט בלי להילחם בתחושה. רק להכניס מעט סדר לנשימה.", how:"דקה של נשימות איטיות דרך האף בלבד. תן לנשיפה להיות מעט ארוכה מהשאיפה." },
-    { id:"hum", title:"נשיפה עם קול", intro:"הקול עוזר לגוף “לרדת הילוך”. אם זה מרגיש מוזר—זה נורמלי לחלוטין.", how:"נשוף לאט עם “מממ” או “האאא”. חזור 8 נשיפות." },
-
-    { id:"ground54321", title:"קרקוע 5–4–3–2–1", intro:"כשיש הצפה, המוח נתקע בראש. אנחנו מחזירים אותך לכאן ולעכשיו דרך החושים.", how:"5 דברים שאני רואה, 4 במגע, 3 קולות, 2 ריחות, 1 טעם." },
-    { id:"feetGround", title:"כפות רגליים לקרקע", intro:"זה עוגן מהיר שמייצב. אנחנו לא חייבים “להרגיש טוב”, רק להיות יציבים יותר.", how:"הרגש את מגע הרגליים ברצפה ואת המשקל. נשום 6 נשימות רגועות." },
-    { id:"objectDescribe", title:"תיאור חפץ", intro:"זה מייצב כי זה מעביר קשב מפרשנות לעובדות. בוא נבחר משהו פשוט מולנו.", how:"בחר חפץ ותאר בלב 5 פרטים (צבע/צורה/מרקם/חומר/שימוש)." },
-    { id:"wideLook", title:"מבט רחב", intro:"בלחץ הראייה “מצטמצמת”. הרחבה של המבט נותנת למוח אות שהסביבה בטוחה.", how:"סרוק את החדר בעיניים מצד לצד 10 שניות. אחר כך בחר נקודה אחת ו-3 נשימות." },
-    { id:"countBack", title:"ספירה יורדת", intro:"זה תרגיל שמוריד רעש במוח בלי מאבק. אם טעית—ממשיכים, לא מבקרים.", how:"ספר לאחור מ־30 לאט. אם טעית—חזור מספר אחד אחורה והמשך." },
-
-    { id:"pmrMini", title:"הרפיית שרירים קצרה", intro:"כשגוף מתוח, המוח מפרש “סכנה”. שחרור קטן בשרירים מפחית את האות הזה.", how:"כווץ 5 שניות ושחרר 10: כפות ידיים, כתפיים, לסת, בטן." },
-    { id:"shouldersDrop", title:"הורדת כתפיים", intro:"זה קטן אבל יעיל: כתפיים למטה = פחות דריכות. נעשה את זה בעדינות.", how:"הרם כתפיים 3 שניות, שחרר לאט. חזור 5 פעמים עם נשימה איטית." },
-    { id:"jawRelax", title:"לסת רכה", intro:"לסת תפוסה מחזיקה סטרס. בוא נשחרר נקודת לחץ מרכזית.", how:"פתח מעט את הפה, הנח לשון על החך, ושחרר לסת ל-30 שניות." },
-    { id:"handPress", title:"לחיצת כפות ידיים", intro:"כשאין שקט בראש, הולכים לגוף. לחץ קבוע נותן תחושת יציבות.", how:"הצמד כפות ידיים ולחץ 10 שניות, שחרר 10. חזור 5 פעמים." },
-    { id:"stretchSlow", title:"מתיחה איטית", intro:"תנועה איטית היא אנטי-הצפה. לא צריך “לשחרר הכול”, רק קצת מרווח.", how:"מתיחה עדינה לצוואר/כתפיים/גב עליון. 3 נשימות לכל תנועה." },
-
-    { id:"coldAnchor", title:"עוגן קר", intro:"קור קצר יכול להוריד דריכות מהר. אנחנו משתמשים בזה כמו “כפתור עצירה”.", how:"מים קרים על כפות ידיים 20–30 שניות. אחר כך 3 נשימות איטיות." },
-    { id:"sipWater", title:"שתייה איטית", intro:"פעולה איטית ופשוטה מחזירה שליטה. המטרה היא קצב, לא תוצאה.", how:"קח 5 לגימות מים לאט. בין לגימה ללגימה—נשיפה ארוכה אחת." },
-    { id:"nameEmotion", title:"לתת שם למה שקורה", intro:"כשנותנים שם לרגש, הוא נהיה פחות “מפלצת”. זה לא אבחון—רק תיאור רגעי.", how:"אמור בלב: “עכשיו יש לי לחץ/פחד/עומס”. הוסף: “זה זמני”." },
-    { id:"microTask", title:"משימה מיקרו", intro:"בהצפה אנחנו מקטינים את העולם. משימה קטנה מחזירה תנועה קדימה.", how:"בחר פעולה של 60 שניות (לסדר דבר אחד/לשטוף פנים/לכתוב שורה) ובצע." },
-    { id:"worryTime", title:"דחיית דאגה לזמן קבוע", intro:"המוח רוצה לפתור הכול עכשיו. אנחנו נותנים לו “תור” מסודר במקום להילחם.", how:"קבע 10 דקות מאוחר יותר. כתוב מילה על הדאגה וחזור להווה." },
-
-    { id:"3min", title:"3 דקות מיקוד", intro:"כאן אנחנו לא מנסים לשנות—רק להתייצב. זה עובד מצוין כשיש עומס כללי.", how:"דקה נשימה, דקה גוף, דקה סביבה. רק לשים לב." },
-    { id:"miniWalk", title:"הליכה מודעת קצרה", intro:"תנועה קצרה מפנה עומס. גם 2 דקות מספיקות כדי לשנות כיוון.", how:"לך 2 דקות. שים לב לכף רגל-רצפה ולנשיפה ארוכה." },
-    { id:"safetyPhrase", title:"משפט מווסת", intro:"משפט קצר חוזר מחזיר יציבות. לא צריך לשכנע—רק להזכיר.", how:"אמור: “זה לא נעים, וזה זמני. אני בטוח כרגע.” חזור 3 פעמים." },
-    { id:"twoChoices", title:"שתי בחירות בלבד", intro:"בהצפה יותר מדי אופציות מעמיס. אנחנו מצמצמים כדי לנשום.", how:"בחר: “נשימה 60 שניות” או “שתייה איטית”. בצע אחת." }
-  ];
-
-  const REG_PREFACES = [
-    "בוא נעצור רגע. מה שעובר עליך עכשיו לא אומר עליך משהו—זה תגובה אנושית ללחץ. אנחנו עושים כאן צעד קטן, לא מהפכה.",
-    "אנחנו לא חייבים להרגיש מושלם כדי להתקדם. מספיק שניצור 5% יותר יציבות עכשיו.",
-    "אם יש התנגדות או חוסר אמון—זה נורמלי. אנחנו רק בודקים מה עובד לך, בקצב שלך."
+    { id:"breath46", title:"נשימה 4–6", intro:"תרגיל נשימה עם נשיפה ארוכה מהשאיפה.", how:"שאיפה 4 שניות, נשיפה 6 שניות. חזור 8 פעמים בקצב נוח." },
+    { id:"box4444", title:"נשימת קופסה 4–4–4–4", intro:"תרגיל נשימה בקצב קבוע.", how:"שאיפה 4, החזקה 4, נשיפה 4, החזקה 4. חזור 4–6 סבבים." },
+    { id:"doubleExhale", title:"נשיפה כפולה", intro:"תרגיל קצר שמתמקד בהארכת הנשיפה.", how:"שאיפה רגילה, שתי נשיפות קצרות ואז נשיפה ארוכה. חזור 6 פעמים." },
+    { id:"noseOnly", title:"נשימה דרך האף", intro:"דקה של תשומת לב לקצב הנשימה.", how:"נשום לאט דרך האף. נסה שהנשיפה תהיה מעט ארוכה מהשאיפה." },
+    { id:"hum", title:"נשיפה עם קול", intro:"תרגיל נשיפה שמשלב קול רציף.", how:"נשוף לאט עם “מממ” או “האאא”. חזור 8 פעמים." },
+    { id:"ground54321", title:"קרקוע 5–4–3–2–1", intro:"התרגיל מפנה את הקשב למה שקורה סביבך דרך החושים.", how:"מצא 5 דברים שאתה רואה, 4 דברים שאתה מרגיש במגע, 3 קולות, 2 ריחות וטעם אחד." },
+    { id:"feetGround", title:"כפות רגליים לקרקע", intro:"תרגיל קצר שמפנה את הקשב למגע עם הקרקע.", how:"שים לב למגע כפות הרגליים ברצפה ולמשקל הגוף. קח 6 נשימות בקצב נוח." },
+    { id:"objectDescribe", title:"תיאור חפץ", intro:"הפנה את הקשב לפרטים שאפשר לראות ולתאר.", how:"בחר חפץ ותאר לעצמך 5 פרטים: צבע, צורה, מרקם, חומר ושימוש." },
+    { id:"wideLook", title:"מבט רחב", intro:"תרגיל קצר של הפניית קשב לסביבה.", how:"העבר את המבט מצד לצד במשך 10 שניות. אחר כך בחר נקודה אחת וקח 3 נשימות." },
+    { id:"countBack", title:"ספירה יורדת", intro:"תרגיל מיקוד פשוט.", how:"ספר לאחור מ־30 בקצב איטי. אם איבדת את הרצף, חזור למספר האחרון שאתה זוכר והמשך." },
+    { id:"pmrMini", title:"הרפיית שרירים קצרה", intro:"כיווץ ושחרור מכוונים של כמה קבוצות שרירים.", how:"כווץ 5 שניות ושחרר 10: כפות ידיים, כתפיים, לסת ובטן." },
+    { id:"shouldersDrop", title:"הורדת כתפיים", intro:"תרגיל קצר לכיווץ ושחרור הכתפיים.", how:"הרם כתפיים ל־3 שניות ושחרר לאט. חזור 5 פעמים." },
+    { id:"jawRelax", title:"שחרור הלסת", intro:"הפנה את הקשב למתח באזור הלסת.", how:"פתח מעט את הפה, הנח את הלשון בנוחות ושחרר את הלסת למשך 30 שניות." },
+    { id:"handPress", title:"לחיצת כפות ידיים", intro:"תרגיל שמתמקד בתחושת הלחץ והשחרור.", how:"הצמד כפות ידיים ולחץ 10 שניות. שחרר ל־10 שניות. חזור 5 פעמים." },
+    { id:"stretchSlow", title:"מתיחה איטית", intro:"כמה מתיחות איטיות לצוואר, לכתפיים ולגב העליון.", how:"בצע מתיחה עדינה וקח 3 נשימות בכל תנוחה. אל תמתח עד כאב." },
+    { id:"coldAnchor", title:"מים קרים", intro:"תרגיל קצר שמפנה את הקשב לתחושת הקור.", how:"העבר מים קרים על כפות הידיים במשך 20–30 שניות. אחר כך קח 3 נשימות איטיות." },
+    { id:"sipWater", title:"שתייה איטית", intro:"פעולה פשוטה ואיטית שממקדת את הקשב.", how:"קח 5 לגימות מים באיטיות. בין לגימה ללגימה קח נשיפה ארוכה." },
+    { id:"nameEmotion", title:"לתת שם למה שקורה", intro:"נסה לתאר במילה או שתיים את מה שאתה מרגיש כרגע.", how:"השלם לעצמך: “כרגע אני מרגיש...”. אין צורך להסביר או לפתור." },
+    { id:"microTask", title:"פעולה של דקה", intro:"בחר פעולה קצרה ומוגדרת שאפשר לסיים עכשיו.", how:"למשל: לסדר דבר אחד, לשטוף פנים או לכתוב שורה. הקדש לה עד דקה." },
+    { id:"worryTime", title:"לדחות את העיסוק בדאגה", intro:"אפשר לקבוע זמן מוגדר לחזור לדאגה במקום לעסוק בה כרגע.", how:"קבע זמן של 10 דקות מאוחר יותר. רשום בקצרה את הדאגה וחזור למה שעשית." },
+    { id:"3min", title:"3 דקות מיקוד", intro:"שלוש דקות של הפניית קשב לנשימה, לגוף ולסביבה.", how:"דקה לנשימה, דקה לתחושות הגוף ודקה למה שאתה רואה ושומע סביבך." },
+    { id:"miniWalk", title:"הליכה קצרה", intro:"שתי דקות של הליכה תוך תשומת לב לתנועה.", how:"לך במשך 2 דקות ושים לב למגע כף הרגל ברצפה ולקצב הנשימה." },
+    { id:"safetyPhrase", title:"משפט עוגן", intro:"בחר משפט קצר שמתאר את המצב בלי להעצים אותו.", how:"למשל: “זה לא נעים, ואני יכול לבדוק מה אני צריך עכשיו.” חזור עליו כמה פעמים אם הוא מתאים לך." },
+    { id:"twoChoices", title:"לצמצם לשתי אפשרויות", intro:"כשקשה לבחור, אפשר לצמצם את האפשרויות לשתיים.", how:"בחר בין דקה של נשימה לבין שתייה איטית. בצע אפשרות אחת." }
   ];
 
   // Thought reality-check prompts (general)
@@ -103,57 +93,50 @@
   // Thought alternatives: general + topics
   const TH_ALTS = {
     general: [
-      "יכול להיות שאני מפרש/ת חמור מדי. אני אבדוק לפני שאחליט.",
-      "זה לא נעים, אבל זה לא אומר שזה מסוכן.",
-      "מותר לי להיות בלחץ ועדיין לפעול נכון.",
-      "גם אם זה לא יצליח 100%, אני יכול/ה להתמודד עם 80%.",
-      "אני לא חייב/ת לדעת עכשיו את כל התשובות. צעד אחד מספיק.",
-      "מחשבה היא לא עובדה. אני יכול/ה לבחור איך להגיב.",
-      "גם אם טעיתי—זה חלק מהלמידה, לא הוכחה שאני כישלון.",
-      "אני יכול/ה להיות עדין/ה עם עצמי ועדיין להתקדם."
+      "מה עוד יכול להסביר את המצב?",
+      "איזה חלק מהמחשבה הוא עובדה ואיזה חלק הוא פירוש?",
+      "מה הייתי אומר לאדם אחר שהיה חושב כך?",
+      "האם אני מתייחס לאפשרות כאילו היא ודאות?",
+      "איזה מידע חסר לי לפני שאסיק מסקנה?",
+      "מה ניסוח מדויק יותר של מה שאני יודע כרגע?"
     ],
     performance: [
-      "להצליח לא אומר להיות מושלם—זה אומר להתמיד.",
-      "אם תהיה טעות, זה לא סוף—זה תיקון.",
-      "אני יכול/ה להתמקד בביצוע צעד אחד, לא בכל התוצאה.",
-      "יש לי יכולת ללמוד תוך כדי. זה מספיק להיום.",
-      "זה לחץ טבעי כשחשוב לי. זה לא אומר שאני לא טוב/ה."
+      "מה נחשב מבחינתי ביצוע סביר, לא מושלם?",
+      "מה המשמעות של טעות אחת בתוך התמונה המלאה?",
+      "על איזה חלק בביצוע יש לי שליטה כרגע?",
+      "באילו מצבים דומים כבר התמודדתי טוב יותר ממה שציפיתי?"
     ],
     relationships: [
-      "אפשר שזו אי הבנה, לא דחייה.",
-      "אני יכול/ה לשאול ברור במקום לנחש.",
-      "קשר חזק בונה על תיקונים, לא על שלמות.",
-      "גם אם זה כואב—אני יכול/ה להגיב בכבוד, בלי להיעלם ובלי להתפוצץ.",
-      "הרגש שלי אמיתי, אבל הוא לא חייב לנהל את השיחה."
+      "מה אני יודע על הכוונה של האדם האחר, ומה אני מניח?",
+      "איזו שאלה יכולה לתת לי מידע במקום לנחש?",
+      "האם קיימים הסברים נוספים להתנהגות שלו?",
+      "מה הייתי רוצה לומר לפני שאני מגיב?"
     ],
     health: [
-      "חרדה גופנית מרגישה מסוכנת, אבל לרוב היא גל חולף.",
-      "אני יכול/ה לבדוק עובדות במקום להיבהל מסימפטום אחד.",
-      "גם אם הגוף לא נעים עכשיו—אני יכול/ה להחזיר שליטה קטנה דרך נשימה ותנועה.",
-      "אני לא חייב/ת להילחם בגוף—אפשר להקשיב ולווסת.",
-      "אני אעשה צעד שמרגיע, ואז אחליט אם צריך בדיקה."
+      "מה אני יודע כרגע על התחושה, ומה אני מסיק ממנה?",
+      "האם יש מידע אמין שתומך במסקנה שלי?",
+      "מה הצעד המתאים לבדיקת המצב בלי להמשיך לנחש?",
+      "האם אני מתייחס לתרחיש אפשרי כאילו כבר קרה?"
     ],
     money: [
-      "לחץ כלכלי לא נפתר במחשבה—נפתר בצעד קטן ותכנית.",
-      "אני יכול/ה לבחור פעולה אחת: לבדוק מספרים / לצמצם סעיף / להתייעץ.",
-      "המצב לא מגדיר אותי. הוא מצב.",
-      "פחד לא ינהל קניות/החלטות. עובדות ינהלו.",
-      "גם כאן—עדיף צעד ברור אחד מאשר הצפה."
+      "אילו מספרים ועובדות יש לי כרגע?",
+      "מה דורש החלטה עכשיו ומה יכול לחכות?",
+      "איזה מידע חסר לי לפני החלטה?",
+      "מה הפעולה המעשית הבאה שאפשר לבדוק?"
     ],
     selfWorth: [
-      "הערך שלי לא נמדד ברגע אחד.",
-      "אני יכול/ה לטעות ועדיין להיות אדם ראוי.",
-      "הביקורת הפנימית נשמעת חכמה, אבל היא לא תמיד צודקת.",
-      "אני לא חייב/ת להוכיח. אני יכול/ה לתרגל.",
-      "זה שאני מרגיש/ה כך—לא אומר שזה נכון."
+      "האם אני מסיק מסקנה כללית על עצמי מאירוע אחד?",
+      "אילו עובדות אינן מתיישבות עם המסקנה הזאת?",
+      "איך הייתי מתאר את האירוע בלי להפוך אותו להגדרה של עצמי?",
+      "מה ניסוח מדויק יותר של מה שקרה?"
     ]
   };
 
   // Dilemma framework (safe, non-diagnostic)
   const DILEMMA_PREFACES = [
-    "דילמה טובה היא סימן שאכפת לך. אנחנו לא מחפשים החלטה מושלמת—אלא החלטה סבירה עם צעד קטן.",
-    "בוא נפריד רגע בין פחד לבין עובדות. נבנה כיוון פעולה שנכון לך, לא לכותרת בראש.",
-    "אנחנו יכולים לבחור צעד הפיך: כזה שמקדם, בלי לשרוף גשרים."
+    "בדוק מה ידוע, מה חשוב לך ומה עדיין חסר לפני החלטה.",
+    "הפרד בין העובדות, החששות והאפשרויות שעומדות בפניך.",
+    "בדוק אם אפשר להתחיל בצעד הפיך שייתן לך מידע נוסף."
   ];
 
   const DILEMMA_MICRO_STEPS = {
@@ -311,12 +294,12 @@
 
   const homeView = () => `
     <div class="card">
-      ${cardHeader("מה עושים עכשיו?", "בחר כלי לפי מה שמתאים לך לרגע הזה. אנחנו איתך, בלי שיפוט.")}
+      ${cardHeader("מה מתאים לך עכשיו?", "בחר את הכלי שמתאים למה שאתה רוצה לעבוד עליו.")}
       <div class="grid2">
         <button class="btn btnPrimary homeToolBtn" data-open="reg">
           <span class="homeToolText">
             <span class="homeToolTitle">לחץ/הצפה</span>
-            <span class="p">תרגיל ויסות אחד בכל פעם</span>
+            <span class="p">תרגיל קצר להפחתת עוררות</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M4 14a8 8 0 1 1 16 0"/><path d="M12 12l3-3"/><path d="M6.5 18h11"/></svg>
@@ -326,7 +309,7 @@
         <button class="btn homeToolBtn" data-open="thought">
           <span class="homeToolText">
             <span class="homeToolTitle">מחשבה שלא עוזבת</span>
-            <span class="p">בדיקת מציאות + חלופות</span>
+            <span class="p">בדיקה של המחשבה מול העובדות</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M9.5 4.5A3 3 0 0 0 6 8v.3A3.5 3.5 0 0 0 5 15a3 3 0 0 0 4.5 2.6"/><path d="M14.5 4.5A3 3 0 0 1 18 8v.3a3.5 3.5 0 0 1 1 6.7 3 3 0 0 1-4.5 2.6"/><path d="M12 4v16M8.5 10H12m3.5 4H12"/><path d="M7 21a5 5 0 0 0 8.7-2"/><path d="M7 21v-4h4"/></svg>
@@ -336,7 +319,7 @@
         <button class="btn homeToolBtn" data-open="dilemma">
           <span class="homeToolText">
             <span class="homeToolTitle">דילמה</span>
-            <span class="p">כיוון + צעד קטן</span>
+            <span class="p">בחינת האפשרויות לפני החלטה</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M6 3v5a4 4 0 0 0 4 4h8"/><path d="M14 8l4 4-4 4"/><path d="M6 21v-5a4 4 0 0 1 4-4"/></svg>
@@ -346,7 +329,7 @@
         <button class="btn homeToolBtn" data-open="journal">
           <span class="homeToolText">
             <span class="homeToolTitle">חשיפות</span>
-            <span class="p">יומן אישי פתוח</span>
+            <span class="p">תיעוד תרגול וחשיפות</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 17h4v-4h4V9h4V5h3"/></svg>
@@ -356,7 +339,7 @@
         <button class="btn homeToolBtn" data-open="goal">
           <span class="homeToolText">
             <span class="homeToolTitle">מטרות</span>
-            <span class="p">כיוון, סיבה וצעד</span>
+            <span class="p">הגדרת מטרה ומעקב</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12l7-7M16 5h3v3"/></svg>
@@ -366,7 +349,7 @@
         <button class="btn homeToolBtn" data-open="lifeWheel">
           <span class="homeToolText">
             <span class="homeToolTitle">מעגל החיים</span>
-            <span class="p">דירוג הווה ועתיד</span>
+            <span class="p">מבט על תחומי החיים</span>
           </span>
           <span class="homeToolIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9M12 12l-6.4 6.4"/></svg>
@@ -383,10 +366,6 @@
       </div>
     </div>
 
-    <div class="card">
-      ${cardHeader("משפט קטן לרגע הזה", "")}
-      <p class="p">${esc(pick(REG_PREFACES))}</p>
-    </div>
   `;
 
 // ---------- Regulation ----------
@@ -394,9 +373,9 @@
     const ex = ui.reg.current;
     return `
       <div class="card">
-        ${cardHeader("לחץ / הצפה", "נרגיע את הגוף רגע, ואז נחזיר סדר לראש.")}
+        ${cardHeader("לחץ / הצפה", "בחר תרגיל קצר והתמקד רק בו.")}
         <div class="stack">
-          ${sliderBlock("עוצמה עכשיו (0–10)", ui.reg.intensity === null ? "0 – לא בחרתי" : `${ui.reg.intensity}`, "reg_int", "בחר רק אחרי שאתה מזיז את הסליידר.")}
+          ${sliderBlock("עוצמה עכשיו (0–10)", ui.reg.intensity === null ? "0 – לא בחרתי" : `${ui.reg.intensity}`, "reg_int", "סמן את העוצמה שמתאימה כרגע.")}
           ${selectBlock("טריגר", "reg_trigger", TRIGGERS, ui.reg.trigger)}
           <div class="sliderWrap">
             <div class="sliderTop">
@@ -409,8 +388,8 @@
 
           <button class="btn btnPrimary" id="reg_next">
             <span class="row" style="gap:10px;"><span>
-                <div style="font-weight:900;">תן לי תרגיל</div>
-                <div class="p">תרגיל אחד בכל פעם (בלי חזרות)</div>
+                <div style="font-weight:900;">בחר תרגיל</div>
+                <div class="p">יוצג תרגיל אחד</div>
               </span>
             </span>
             <span>›</span>
@@ -427,13 +406,11 @@
               <div style="font-weight:900; line-height:1.55;">${esc(ex.how)}</div>
               <div class="hr"></div>
               <div class="pillRow">
-                <span class="tag">אנחנו איתך</span>
-                <span class="tag">צעד קטן</span>
-                <span class="tag">לא חייב מושלם</span>
+                <span class="tag">תרגיל קצר</span>
               </div>
             </div>
           ` : `
-            <div class="smallNote">טיפ: אם אתה/את מוצף/ת מאוד—תתחיל/י קודם בעוגן קר או קרקוע 5-4-3-2-1.</div>
+            <div class="smallNote">אפשר להתחיל בקרקוע 5–4–3–2–1 או בתרגיל מים קרים.</div>
           `}
 
           <button class="btn btnInline" id="go_home"><span>חזרה לבית</span><span>⌂</span></button>
@@ -441,7 +418,7 @@
       </div>
 
       <div class="card">
-        ${cardHeader("שמור וסיים", "כשתסיים את התרגיל—נשמור את האירוע, כדי שתוכל/י לראות דפוסים לאורך זמן.")}
+        ${cardHeader("שמירת התרגול", "אפשר לשמור את התרגול כדי לעקוב אחר דפוסים לאורך זמן.")}
         <button class="btn btnPrimary" id="reg_save">
           <span class="row" style="gap:10px;"><span>
               <div style="font-weight:900;">שמור וסיים</div>
@@ -522,9 +499,9 @@
     const outs = ui.thought.outputs || [];
     return `
       <div class="card">
-        ${cardHeader("מחשבה שלא עוזבת", "נבדוק עובדות מול פרשנות, ונייצר 2–3 חלופות מאוזנות.")}
+        ${cardHeader("מחשבה שלא עוזבת", "כתוב את המחשבה ובדוק מה ידוע ומה אתה מניח.")}
         <div class="stack">
-          ${sliderBlock("עוצמה עכשיו (0–10)", ui.thought.intensity === null ? "0 – לא בחרתי" : `${ui.thought.intensity}`, "th_int", "בחר רק אחרי שאתה מזיז את הסליידר.")}
+          ${sliderBlock("עוצמה עכשיו (0–10)", ui.thought.intensity === null ? "0 – לא בחרתי" : `${ui.thought.intensity}`, "th_int", "סמן את העוצמה שמתאימה כרגע.")}
           ${selectBlock("טריגר", "th_trigger", TRIGGERS, ui.thought.trigger)}
           ${selectBlock("נושא", "th_topic", topicOptionsThought, ui.thought.topic)}
 
@@ -532,8 +509,8 @@
 
           <button class="btn btnPrimary" id="th_generate">
             <span class="row" style="gap:10px;"><span>
-                <div style="font-weight:900;">תן לי בדיקת מציאות</div>
-                <div class="p">ואז 2–3 מחשבות חליפיות</div>
+                <div style="font-weight:900;">בדיקת המחשבה</div>
+                <div class="p">שאלת בדיקה וניסוחים אפשריים</div>
               </span>
             </span>
             <span>›</span>
@@ -544,21 +521,21 @@
               <div style="font-weight:900; margin-bottom:8px;">בדיקת מציאות</div>
               <div class="p" style="margin-bottom:10px;">${esc(outs[0].reality)}</div>
               <div class="hr"></div>
-              <div style="font-weight:900; margin-bottom:8px;">מחשבות חליפיות (בחר/י אחת)</div>
+              <div style="font-weight:900; margin-bottom:8px;">ניסוחים לבדיקה</div>
               ${outs[0].alts.map((a, idx) => `
                 <button class="btn btnSmall" data-alt="${idx}">
                   <span class="row" style="gap:10px;"><span style="text-align:right;">
-                      <div style="font-weight:900;">חלופה ${idx+1}</div>
+                      <div style="font-weight:900;">אפשרות ${idx+1}</div>
                       <div class="p">${esc(a)}</div>
                     </span>
                   </span>
                   <span>✓</span>
                 </button>
               `).join("")}
-              <div class="smallNote" style="margin-top:10px;">החלופה היא “מאוזנת” — לא ורודה מדי ולא קיצונית מדי.</div>
+              <div class="smallNote" style="margin-top:10px;">בחר ניסוח שמתאים לעובדות, או ערוך אותו בהמשך במילים שלך.</div>
             </div>
           ` : `
-            <div class="smallNote">טיפ: אם אין לך כוח לכתוב—רשום/רשמי רק 3 מילים שמסכמות.</div>
+            <div class="smallNote">אפשר לכתוב גם משפט קצר בלבד.</div>
           `}
 
           <button class="btn btnInline" id="go_home2"><span>חזרה לבית</span><span>⌂</span></button>
@@ -569,8 +546,7 @@
 
   const buildReality = (text) => {
     const q = pick(TH_QUESTIONS);
-    const lead = "בוא נבדוק רגע: מחשבה היא לא עובדה. אנחנו מחפשים ניסוח מאוזן שמאפשר לפעול.";
-    return `${lead} שאלה מנחה: ${q}  |  המחשבה: “${text.trim()}”`;
+    return `שאלת בדיקה: ${q}  |  המחשבה שכתבת: “${text.trim()}”`;
   };
 
   const topicToKey = (t) => {
@@ -676,17 +652,17 @@
     const out = ui.dilemma.output;
     return `
       <div class="card">
-        ${cardHeader("דילמה", "נוריד עומס, נחדד מה חשוב, ונבחר צעד קטן ובטוח.")}
+        ${cardHeader("דילמה", "בחן את האפשרויות ומה חשוב לך לפני החלטה.")}
         <div class="stack">
-          ${sliderBlock("עוצמה עכשיו (0–10)", ui.dilemma.intensity === null ? "0 – לא בחרתי" : `${ui.dilemma.intensity}`, "di_int", "בחר רק אחרי שאתה מזיז את הסליידר.")}
+          ${sliderBlock("עוצמה עכשיו (0–10)", ui.dilemma.intensity === null ? "0 – לא בחרתי" : `${ui.dilemma.intensity}`, "di_int", "סמן את העוצמה שמתאימה כרגע.")}
           ${selectBlock("טריגר", "di_trigger", TRIGGERS, ui.dilemma.trigger)}
           ${selectBlock("תחום", "di_topic", dilemmaTopicOptions, ui.dilemma.topic)}
           <textarea id="di_text" placeholder="כתוב/כתבי בקצרה: מה הדילמה? (2–3 שורות)">${esc(ui.dilemma.text)}</textarea>
 
           <button class="btn btnPrimary" id="di_generate">
             <span class="row" style="gap:10px;"><span>
-                <div style="font-weight:900;">בוא נבנה כיוון</div>
-                <div class="p">עדין, ברור, ומעשי</div>
+                <div style="font-weight:900;">בחינת הדילמה</div>
+                <div class="p">שאלות בדיקה ואפשרות לצעד הבא</div>
               </span>
             </span>
             <span>›</span>
@@ -700,12 +676,12 @@
               </div>
               <p class="p">${esc(out.preface)}</p>
               <div class="hr"></div>
-              <div style="font-weight:900; margin-bottom:6px;">עדשות חשיבה (לבחור אחת)</div>
+              <div style="font-weight:900; margin-bottom:6px;">שאלות שכדאי לבדוק</div>
               <div class="pillRow">
                 ${out.lenses.map(l => `<span class="tag">${esc(l)}</span>`).join("")}
               </div>
               <div class="hr"></div>
-              <div style="font-weight:900; margin-bottom:6px;">צעד קטן מומלץ</div>
+              <div style="font-weight:900; margin-bottom:6px;">אפשרות לצעד הבא</div>
               <div style="line-height:1.55; font-weight:900;">${esc(out.step)}</div>
               <div class="smallNote" style="margin-top:10px;">
                 אם יש כאן סיכון גבוה (בטיחות/אלימות/בריאות דחופה) — עדיף צעד שמערב גורם מקצועי/עזרה מיידית. האפליקציה לא מחליפה טיפול.
@@ -714,14 +690,14 @@
               <button class="btn btnPrimary" id="di_save">
                 <span class="row" style="gap:10px;"><span>
                     <div style="font-weight:900;">שמור וסיים</div>
-                    <div class="p">דילמה + צעד קטן + עוצמה + טריגר</div>
+                    <div class="p">דילמה + פעולה + עוצמה + טריגר</div>
                   </span>
                 </span>
                 <span>✓</span>
               </button>
             </div>
           ` : `
-            <div class="smallNote">טיפ: בדילמה, “צעד הפיך” כמעט תמיד עדיף מצעד קיצוני כשאתה/את מוצף/ת.</div>
+            <div class="smallNote">אפשר לבדוק קודם אם קיימת אפשרות הפיכה שאינה מחייבת החלטה מלאה.</div>
           `}
 
           <button class="btn btnInline" id="go_home3"><span>חזרה לבית</span><span>⌂</span></button>
@@ -836,7 +812,7 @@
 
   const exposuresView = () => `
     <div class="card">
-      ${cardHeader("חשיפות", "מקום קצר לתיעוד. אפשר לכתוב חופשי.")}
+      ${cardHeader("חשיפות", "תיעוד של תרגול, מצב ותגובה.")}
       <textarea id="exp_text" placeholder="כתוב כאן..."></textarea>
       <button class="btn btnPrimary" id="exp_save"><span>שמור</span><span>✓</span></button>
       <div class="hr"></div>
@@ -877,10 +853,10 @@
 
   const goalsView = () => `
     <div class="card">
-      ${cardHeader("מטרות", "מטרה אחת יכולה להספיק. כיוון, סיבה וצעד ראשון.")}
+      ${cardHeader("מטרות", "הגדר מטרה, למה היא חשובה ומה הפעולה הראשונה.")}
       <input id="g_title" class="input" placeholder="מה המטרה?" />
       <textarea id="g_why" placeholder="למה זה חשוב לי?"></textarea>
-      <input id="g_step" class="input" placeholder="צעד ראשון קטן" />
+      <input id="g_step" class="input" placeholder="פעולה ראשונה" />
       <button class="btn btnPrimary" id="g_add"><span>הוסף מטרה</span><span>+</span></button>
       <div class="hr"></div>
       ${goals.length === 0 ? `<p class="p">עדיין אין מטרות.</p>` : goals.slice(0, 50).map((g,i)=>`
@@ -1012,14 +988,14 @@
         <div class="smallNote" style="margin-top:10px;">תיאור עתיד</div>
         <textarea class="input" data-life-fdesc="${idx}" placeholder="איך הייתי רוצה שזה ייראה...">${esc(it.futureDesc||"")}</textarea>
 
-        <div class="smallNote" style="margin-top:10px;">צעד קטן</div>
-        <input class="input" data-life-step="${idx}" placeholder="משהו אחד שאפשר להתחיל ממנו" value="${esc(it.step||"")}" />
+        <div class="smallNote" style="margin-top:10px;">פעולה אפשרית</div>
+        <input class="input" data-life-step="${idx}" placeholder="מה אפשר לעשות מכאן?" value="${esc(it.step||"")}" />
       </div>
     `).join("");
 
     return `
       <div class="card">
-        ${cardHeader("מעגל החיים", "מסתכלים על התמונה הרחבה, ואז בוחרים כיוון וצעד אחד.")}
+        ${cardHeader("מעגל החיים", "דרג את המצב כיום ואת המצב שאליו היית רוצה להגיע.")}
         <div class="rowBetween" style="gap:10px; flex-wrap:wrap;">
           <div class="smallNote">תצוגה: <b>${esc(whichLabel)}</b></div>
           <button class="btn ghost" id="life_toggle"><span>להציג ${esc(otherLabel)}</span></button>
@@ -1088,7 +1064,7 @@
 
     return `
       <div class="card">
-        ${cardHeader("היסטוריה", "הכול נשמר לפי יום ושעה — כדי לראות שכיחות, טריגרים ועוצמות לאורך זמן.")}
+        ${cardHeader("היסטוריה", "תרגולים שנשמרו לפי תאריך ושעה.")}
         <div class="kpi">
           <div class="kpiItem">
             <div class="kpiTitle">סה״כ אירועים</div>
@@ -1102,7 +1078,7 @@
         <div class="hr"></div>
 
         ${total === 0 ? `
-          <p class="p">עדיין אין אירועים. תתחיל/י מכלי אחד, ותשמור/י — ואז נוכל לראות דפוסים.</p>
+          <p class="p">עדיין לא נשמרו תרגולים.</p>
         ` : `
           <button class="btn btnDanger" id="clear_history">
             <span class="row" style="gap:10px;"><span>
@@ -1275,7 +1251,7 @@
 
     return `
       <div class="card">
-        ${cardHeader("💡 תובנות", "מסכם דפוסים מהשימוש שלך — הכל נשמר מקומית במכשיר.")}
+        ${cardHeader("תובנות", "סיכום נתונים מהתרגולים ששמרת במכשיר.")}
         <div class="kpi">
           <div class="kpiItem">
             <div class="kpiTitle">סה״כ אירועים</div>
@@ -1311,14 +1287,14 @@
         <div class="hr"></div>
 
         <div class="item">
-          <div style="font-weight:900; margin-bottom:6px;">מה חוזר אצלך (רמז למה שעובד)</div>
-          <div class="smallNote" style="margin-bottom:8px;">אנחנו לא “מאבחנים” — רק מזהים חזרות בתרגילים/בחירות שנשמרו.</div>
+          <div style="font-weight:900; margin-bottom:6px;">בחירות שחוזרות בתרגולים</div>
+          <div class="smallNote" style="margin-bottom:8px;">הנתונים מציגים חזרות בלבד ואינם מהווים אבחון.</div>
           ${renderTop(ins.topChoices, "עדיין אין בחירות שחוזרות מספיק כדי להציג כאן.")}
         </div>
 
         <div class="hr"></div>
         <div class="smallNote">
-          טיפ: אם העוצמה עלתה — זה לא כישלון. זה מידע. אפשר לבחור צעד קטן אחד לשבוע הקרוב (למשל 2 תרגילי ויסות קבועים).
+          שינוי בעוצמה הוא נתון למעקב. כדאי לבחון אותו לצד מספר התרגולים והמצבים שבהם השתמשת באפליקציה.
         </div>
       </div>
     `;
@@ -1425,7 +1401,7 @@
     const lockEnabled = !!getLockConfig();
     return `
     <div class="card">
-      ${cardHeader("פרטיות", "הדבר הכי חשוב: זה נשאר אצלך.")}
+      ${cardHeader("פרטיות", "הנתונים נשמרים במכשיר בלבד.")}
       <div class="stack">
         <div class="item">
           <div class="rowBetween">
