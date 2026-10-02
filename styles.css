@@ -949,3 +949,55 @@ select:focus-visible{
     transition:none;
   }
 }
+
+
+/* ===== CORE SECOND-THOUGHT EXPERIENCE ===== */
+.coreHero{
+  background:linear-gradient(145deg,rgba(255,249,239,.98),rgba(255,237,194,.94));
+  border:1px solid var(--app-border-warm);
+  border-radius:28px;
+  padding:28px 22px 22px;
+  box-shadow:var(--app-shadow-container);
+}
+.coreEyebrow{font-size:12px;letter-spacing:.08em;color:var(--app-teal-dark);margin-bottom:8px}
+.coreHeroTitle{margin:0;font-size:30px;line-height:1.25;color:var(--app-text-primary);font-family:var(--font-body);font-weight:700}
+.coreHeroSub{margin:8px 0 18px;color:var(--app-text-secondary);line-height:1.65}
+.coreHomeInput{min-height:130px;font-size:17px;line-height:1.7;padding:16px;border-radius:18px}
+.coreStartBtn{margin-top:12px;min-height:52px;font-size:16px}
+.secondaryTools{margin-top:14px!important}
+.secondaryToolsTitle{font-weight:700;margin-bottom:10px}
+.quickTools{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.quickTool{border:1px solid var(--app-border-soft);background:var(--app-surface-soft);border-radius:15px;padding:12px;text-align:right;color:var(--app-text-primary);cursor:pointer}
+.quickTool span{display:block;font-weight:700}
+.quickTool small{display:block;color:var(--app-text-secondary);margin-top:3px}
+.allTools{margin-top:12px;border-top:1px solid var(--app-border-soft);padding-top:10px}
+.allTools summary{cursor:pointer;color:var(--app-teal-dark);font-size:14px}
+
+.coreFlow{padding:18px}
+.coreProgress{display:flex;gap:5px;overflow-x:auto;margin-bottom:22px;padding-bottom:3px}
+.coreProgress span{white-space:nowrap;font-size:11px;padding:6px 8px;border-radius:999px;background:rgba(23,48,66,.06);color:var(--app-text-muted)}
+.coreProgress span.active{background:var(--app-teal-soft);color:var(--app-teal-dark);font-weight:700}
+.coreProgress span.done{color:var(--app-teal-dark)}
+.coreStepNo{font-size:12px;color:var(--app-teal-dark);margin-bottom:5px}
+.coreStep h2{font-family:var(--font-body);font-size:25px;margin:0 0 7px;color:var(--app-text-primary)}
+.coreStep>p{color:var(--app-text-secondary);line-height:1.65;margin:0 0 14px}
+.coreStep textarea{min-height:120px;font-size:16px;line-height:1.65;margin-bottom:12px}
+.coreQuote{padding:13px 15px;border-right:3px solid var(--app-teal);background:rgba(22,139,139,.06);border-radius:12px;margin:10px 0 16px;line-height:1.6}
+.coreDivider{height:1px;background:var(--app-border-soft);margin:7px 0 16px}
+.coreLabel{display:block;font-weight:700;margin-bottom:5px}
+.coreCompare{display:grid;gap:8px;margin:12px 0 18px}
+.coreCompare>div{padding:12px 14px;background:var(--app-surface-soft);border:1px solid var(--app-border-soft);border-radius:14px}
+.coreCompare small{color:var(--app-text-secondary)}
+.coreCompare p{margin:5px 0 0;line-height:1.55}
+.coreCompare .second{border-color:var(--app-border-teal);background:var(--app-teal-soft)}
+.coreBack{margin-top:15px;border:0;background:transparent;color:var(--app-text-secondary);cursor:pointer}
+.regulationNow .regExercise{padding:16px;border-radius:18px;background:var(--app-surface-soft);border:1px solid var(--app-border-soft);margin:12px 0}
+.regExercise h2{font-family:var(--font-body);margin:10px 0 6px;font-size:22px}
+.regInstruction{margin-top:14px;padding:13px;border-radius:13px;background:rgba(255,255,255,.55);line-height:1.7;font-weight:600}
+.regAfter h3{font-size:17px;margin:0 0 10px}
+@media(max-width:520px){
+  .coreHero{padding:23px 17px 18px}
+  .coreHeroTitle{font-size:27px}
+  .quickTools{grid-template-columns:1fr 1fr}
+  .coreProgress span{font-size:10px;padding:6px}
+}
