@@ -366,10 +366,6 @@
       </div>
     </div>
 
-    <div class="card">
-      ${cardHeader("משפט קטן לרגע הזה", "")}
-      <p class="p">${esc(pick(REG_PREFACES))}</p>
-    </div>
   `;
 
 // ---------- Regulation ----------
@@ -410,9 +406,7 @@
               <div style="font-weight:900; line-height:1.55;">${esc(ex.how)}</div>
               <div class="hr"></div>
               <div class="pillRow">
-                <span class="tag">אנחנו איתך</span>
-                <span class="tag">צעד קטן</span>
-                <span class="tag">לא חייב מושלם</span>
+                <span class="tag">תרגיל קצר</span>
               </div>
             </div>
           ` : `
@@ -552,8 +546,7 @@
 
   const buildReality = (text) => {
     const q = pick(TH_QUESTIONS);
-    const lead = "בוא נבדוק רגע: מחשבה היא לא עובדה. אנחנו מחפשים ניסוח מאוזן שמאפשר לפעול.";
-    return `${lead} שאלה מנחה: ${q}  |  המחשבה: “${text.trim()}”`;
+    return `שאלת בדיקה: ${q}  |  המחשבה שכתבת: “${text.trim()}”`;
   };
 
   const topicToKey = (t) => {
@@ -697,7 +690,7 @@
               <button class="btn btnPrimary" id="di_save">
                 <span class="row" style="gap:10px;"><span>
                     <div style="font-weight:900;">שמור וסיים</div>
-                    <div class="p">דילמה + צעד קטן + עוצמה + טריגר</div>
+                    <div class="p">דילמה + פעולה + עוצמה + טריגר</div>
                   </span>
                 </span>
                 <span>✓</span>
