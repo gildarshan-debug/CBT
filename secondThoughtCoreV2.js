@@ -105,9 +105,10 @@
     host.insertAdjacentHTML('afterend', `
       <div id="${PANEL_ID}" class="stFinishV2"
         data-first="${esc(firstThought)}" data-before="${before}" data-trigger="${esc(trigger)}" data-topic="${esc(topic)}" data-reality="${esc(reality)}">
-        <div style="font-weight:900;font-size:17px;margin-bottom:6px;">ועכשיו, במחשבה שנייה…</div>
-        <div class="p">אחרי שבדקת את המחשבה, נסח אותה מחדש במילים שלך.</div>
-        <textarea id="st_second_v2" style="margin-top:10px;">${esc(chosenAlt)}</textarea>
+        <div style="font-weight:900;font-size:17px;margin-bottom:6px;">בדיקה נוספת</div>
+        <div class="p">${esc(chosenAlt)}</div>
+        <div class="p" style="margin-top:10px;">אחרי הבדיקה, נסח את המחשבה מחדש במילים שלך.</div>
+        <textarea id="st_second_v2" style="margin-top:10px;" placeholder="המחשבה בניסוח מדויק יותר..."></textarea>
         <div style="font-weight:900;margin-top:14px;">כמה המחשבה מפריעה לי עכשיו? <span id="st_after_val_v2">${before}</span>/10</div>
         <input id="st_after_v2" type="range" min="0" max="10" step="1" value="${before}" />
         <div style="font-weight:900;margin-top:14px;">מה הפעולה הבאה שלי?</div>
